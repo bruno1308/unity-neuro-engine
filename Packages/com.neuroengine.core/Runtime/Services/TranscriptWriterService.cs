@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -18,8 +19,9 @@ namespace NeuroEngine.Services
     public class TranscriptWriterService : ITranscriptWriter
     {
         private readonly string _tasksRoot;
-        private readonly Dictionary<string, Transcript> _activeTranscripts = new Dictionary<string, Transcript>();
-        private readonly Dictionary<string, Stopwatch> _turnTimers = new Dictionary<string, Stopwatch>();
+        private readonly ConcurrentDictionary<string, Transcript> _activeTranscripts = new ConcurrentDictionary<string, Transcript>();
+        private readonly ConcurrentDictionary<string, Stopwatch> _turnTimers = new ConcurrentDictionary<string, Stopwatch>();
+        private readonly object _fileLock = new object();
 
         private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
         {
@@ -61,7 +63,7 @@ namespace NeuroEngine.Services
                 Turns = new List<TranscriptTurn>()
             };
 
-            _activeTranscripts[taskId] = transcript;
+            _activeTranscripts.TryAdd(taskId, transcript);
 
             // Create task directory
             var taskDir = GetTaskDirectory(taskId);
@@ -105,11 +107,10 @@ namespace NeuroEngine.Services
 
             // Calculate duration if timer was running
             long? durationMs = null;
-            if (_turnTimers.TryGetValue(taskId, out var timer))
+            if (_turnTimers.TryRemove(taskId, out var timer))
             {
                 timer.Stop();
                 durationMs = timer.ElapsedMilliseconds;
-                _turnTimers.Remove(taskId);
             }
 
             var turn = new TranscriptTurn
@@ -181,7 +182,7 @@ namespace NeuroEngine.Services
             transcript.Outcome = outcome;
 
             SaveTranscriptSync(taskId);
-            _activeTranscripts.Remove(taskId);
+            _activeTranscripts.TryRemove(taskId, out _);
 
             Debug.Log($"[TranscriptWriter] Completed transcript for task {taskId}");
         }
@@ -199,7 +200,7 @@ namespace NeuroEngine.Services
             transcript.ErrorMessage = errorMessage;
 
             SaveTranscriptSync(taskId);
-            _activeTranscripts.Remove(taskId);
+            _activeTranscripts.TryRemove(taskId, out _);
 
             Debug.Log($"[TranscriptWriter] Failed transcript for task {taskId}: {errorMessage}");
         }
@@ -229,7 +230,39 @@ namespace NeuroEngine.Services
             {
                 var path = GetTranscriptPath(taskId);
                 var json = JsonConvert.SerializeObject(transcript, _jsonSettings);
-                await File.WriteAllTextAsync(path, json);
+                await WriteFileAtomicAsync(path, json);
+            }
+        }
+
+        /// <summary>
+        /// Write file atomically using temp file + rename pattern (async version).
+        /// </summary>
+        private async Task WriteFileAtomicAsync(string path, string content)
+        {
+            var tempPath = path + ".tmp";
+            try
+            {
+                // Write to temp file first
+                await File.WriteAllTextAsync(tempPath, content);
+
+                // Atomic rename (overwrite if exists)
+                lock (_fileLock)
+                {
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+                    File.Move(tempPath, path);
+                }
+            }
+            catch
+            {
+                // Clean up temp file on failure
+                if (File.Exists(tempPath))
+                {
+                    try { File.Delete(tempPath); } catch { }
+                }
+                throw;
             }
         }
 
@@ -287,7 +320,7 @@ namespace NeuroEngine.Services
         {
             var timer = new Stopwatch();
             timer.Start();
-            _turnTimers[taskId] = timer;
+            _turnTimers.AddOrUpdate(taskId, timer, (_, __) => timer);
         }
 
         private string GetTaskDirectory(string taskId)
@@ -309,11 +342,44 @@ namespace NeuroEngine.Services
             {
                 var path = GetTranscriptPath(taskId);
                 var json = JsonConvert.SerializeObject(transcript, _jsonSettings);
-                File.WriteAllText(path, json);
+                WriteFileAtomic(path, json);
             }
             catch (Exception e)
             {
                 Debug.LogError($"[TranscriptWriter] Failed to save transcript for {taskId}: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Write file atomically using temp file + rename pattern.
+        /// Prevents corruption if process is interrupted during write.
+        /// </summary>
+        private void WriteFileAtomic(string path, string content)
+        {
+            lock (_fileLock)
+            {
+                var tempPath = path + ".tmp";
+                try
+                {
+                    // Write to temp file first
+                    File.WriteAllText(tempPath, content);
+
+                    // Atomic rename (overwrite if exists)
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+                    File.Move(tempPath, path);
+                }
+                catch
+                {
+                    // Clean up temp file on failure
+                    if (File.Exists(tempPath))
+                    {
+                        try { File.Delete(tempPath); } catch { }
+                    }
+                    throw;
+                }
             }
         }
     }

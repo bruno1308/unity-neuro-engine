@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NeuroEngine.Core;
 using Newtonsoft.Json;
@@ -17,8 +19,19 @@ namespace NeuroEngine.Services
     {
         private readonly string _tasksRoot;
         private readonly string _convoysRoot;
-        private readonly Dictionary<string, AgentTask> _taskCache = new Dictionary<string, AgentTask>();
+        private readonly ConcurrentDictionary<string, AgentTask> _taskCache = new ConcurrentDictionary<string, AgentTask>();
         private int _taskCounter;
+        private readonly object _fileLock = new object();
+
+        // Valid state transitions for task lifecycle
+        private static readonly Dictionary<string, HashSet<string>> _validTransitions = new Dictionary<string, HashSet<string>>
+        {
+            { "pending", new HashSet<string> { "in_progress", "cancelled" } },
+            { "in_progress", new HashSet<string> { "completed", "failed", "cancelled" } },
+            { "completed", new HashSet<string>() },  // Terminal state
+            { "failed", new HashSet<string>() },     // Terminal state
+            { "cancelled", new HashSet<string>() }   // Terminal state
+        };
 
         private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
         {
@@ -80,8 +93,8 @@ namespace NeuroEngine.Services
 
         public AgentTask CreateTask(TaskAssignment assignment)
         {
-            _taskCounter++;
-            var taskId = $"task-{_taskCounter:D4}";
+            var newCounter = Interlocked.Increment(ref _taskCounter);
+            var taskId = $"task-{newCounter:D4}";
 
             var task = new AgentTask
             {
@@ -119,9 +132,12 @@ namespace NeuroEngine.Services
             var path = GetTaskPath(taskId);
             if (File.Exists(path))
             {
-                var json = File.ReadAllText(path);
-                task = JsonConvert.DeserializeObject<AgentTask>(json, _jsonSettings);
-                _taskCache[taskId] = task;
+                lock (_fileLock)
+                {
+                    var json = File.ReadAllText(path);
+                    task = JsonConvert.DeserializeObject<AgentTask>(json, _jsonSettings);
+                }
+                _taskCache.TryAdd(taskId, task);
                 return task;
             }
 
@@ -151,6 +167,12 @@ namespace NeuroEngine.Services
                 return;
             }
 
+            if (!ValidateStateTransition(task.Status, "in_progress"))
+            {
+                Debug.LogWarning($"[TaskManager] Invalid state transition for task {taskId}: {task.Status} -> in_progress");
+                return;
+            }
+
             task.Status = "in_progress";
             task.AssignedAgent = agentName;
             task.StartedAt = DateTime.UtcNow.ToString("o");
@@ -172,6 +194,12 @@ namespace NeuroEngine.Services
             if (task == null)
             {
                 Debug.LogWarning($"[TaskManager] Task {taskId} not found");
+                return;
+            }
+
+            if (!ValidateStateTransition(task.Status, "completed"))
+            {
+                Debug.LogWarning($"[TaskManager] Invalid state transition for task {taskId}: {task.Status} -> completed");
                 return;
             }
 
@@ -198,10 +226,19 @@ namespace NeuroEngine.Services
                 return;
             }
 
+            if (!ValidateStateTransition(task.Status, "failed"))
+            {
+                Debug.LogWarning($"[TaskManager] Invalid state transition for task {taskId}: {task.Status} -> failed");
+                return;
+            }
+
             task.Status = "failed";
             task.CompletedAt = DateTime.UtcNow.ToString("o");
             task.ErrorMessage = errorMessage;
-            task.Progress.CurrentStep = "Failed";
+            if (task.Progress != null)
+            {
+                task.Progress.CurrentStep = "Failed";
+            }
 
             SaveTask(task);
             Debug.Log($"[TaskManager] Task {taskId} failed: {errorMessage}");
@@ -216,10 +253,19 @@ namespace NeuroEngine.Services
                 return;
             }
 
+            if (!ValidateStateTransition(task.Status, "cancelled"))
+            {
+                Debug.LogWarning($"[TaskManager] Invalid state transition for task {taskId}: {task.Status} -> cancelled");
+                return;
+            }
+
             task.Status = "cancelled";
             task.CompletedAt = DateTime.UtcNow.ToString("o");
             task.ErrorMessage = $"Cancelled: {reason}";
-            task.Progress.CurrentStep = "Cancelled";
+            if (task.Progress != null)
+            {
+                task.Progress.CurrentStep = "Cancelled";
+            }
 
             SaveTask(task);
             Debug.Log($"[TaskManager] Task {taskId} cancelled: {reason}");
@@ -407,16 +453,63 @@ namespace NeuroEngine.Services
 
             var path = Path.Combine(taskDir, "assignment.json");
             var json = JsonConvert.SerializeObject(task, _jsonSettings);
-            File.WriteAllText(path, json);
+            WriteFileAtomic(path, json);
 
-            _taskCache[task.TaskId] = task;
+            _taskCache.AddOrUpdate(task.TaskId, task, (_, __) => task);
+        }
+
+        /// <summary>
+        /// Validate that a state transition is allowed.
+        /// </summary>
+        private bool ValidateStateTransition(string currentState, string newState)
+        {
+            if (string.IsNullOrEmpty(currentState))
+                return true; // Allow any transition from null state
+
+            if (!_validTransitions.TryGetValue(currentState, out var allowedStates))
+                return false;
+
+            return allowedStates.Contains(newState);
+        }
+
+        /// <summary>
+        /// Write file atomically using temp file + rename pattern.
+        /// Prevents corruption if process is interrupted during write.
+        /// </summary>
+        private void WriteFileAtomic(string path, string content)
+        {
+            lock (_fileLock)
+            {
+                var tempPath = path + ".tmp";
+                try
+                {
+                    // Write to temp file first
+                    File.WriteAllText(tempPath, content);
+
+                    // Atomic rename (overwrite if exists)
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+                    File.Move(tempPath, path);
+                }
+                catch
+                {
+                    // Clean up temp file on failure
+                    if (File.Exists(tempPath))
+                    {
+                        try { File.Delete(tempPath); } catch { }
+                    }
+                    throw;
+                }
+            }
         }
 
         private void SaveConvoy(Convoy convoy)
         {
             var path = Path.Combine(_convoysRoot, $"{convoy.ConvoyId}.json");
             var json = JsonConvert.SerializeObject(convoy, _jsonSettings);
-            File.WriteAllText(path, json);
+            WriteFileAtomic(path, json);
         }
     }
 }
