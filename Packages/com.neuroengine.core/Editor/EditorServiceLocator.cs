@@ -182,6 +182,47 @@ namespace NeuroEngine.Editor
             if (type == typeof(IPolishGrader))
                 return new PolishGraderService() as T;
 
+            if (type == typeof(IVisualGrader))
+                return new VisualGraderService() as T;
+
+            if (type == typeof(IQualityGrader))
+                return new QualityGraderService() as T;
+
+            if (type == typeof(IBehavioralGrader))
+                return new BehavioralGraderService() as T;
+
+            if (type == typeof(IEvaluationRunner))
+                return new EvaluationRunnerService() as T;
+
+            // Layer 6: Agent Orchestration
+            if (type == typeof(IOrchestration))
+                return new OrchestrationService() as T;
+
+            if (type == typeof(ISafetyControl))
+                return new SafetyControlService() as T;
+
+            // Layer 7: Generative Asset Pipeline
+            if (type == typeof(IEnvConfig))
+                return new EnvConfigService() as T;
+
+            if (type == typeof(IStyleGuide))
+                return new StyleGuideService() as T;
+
+            if (type == typeof(IAssetRegistry))
+                return new AssetRegistryService() as T;
+
+            if (type == typeof(IMeshyService))
+            {
+                var config = new EnvConfigService();
+                return new MeshyService(config) as T;
+            }
+
+            if (type == typeof(IElevenLabsService))
+            {
+                var config = new EnvConfigService();
+                return new ElevenLabsService(config) as T;
+            }
+
             // For concrete types, try parameterless constructor
             if (!type.IsInterface && !type.IsAbstract)
             {

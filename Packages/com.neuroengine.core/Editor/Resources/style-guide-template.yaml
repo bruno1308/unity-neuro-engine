@@ -1,0 +1,179 @@
+# Neuro-Engine Style Guide Template
+# ===================================
+# This template defines visual consistency rules for AI-generated assets.
+# Copy this file to hooks/style-guide.yaml or Assets/Config/style-guide.yaml
+# and customize for your project.
+#
+# Part of Layer 7: Generative Asset Pipeline
+# See Docs/Architecture.md for details.
+
+name: "My Game Style Guide"
+version: "1.0.0"
+description: "Art direction and style constraints for consistent visual identity"
+
+# =============================================================================
+# COLOR PALETTE
+# =============================================================================
+# Define your project's color palette. All generated and imported assets
+# will be validated against these colors.
+#
+# color_tolerance: How much variance from palette colors is acceptable (0.0-1.0)
+#   - 0.0 = exact match required
+#   - 0.15 = slight variation allowed (recommended)
+#   - 0.3 = loose matching
+
+colors:
+  tolerance: 0.15
+
+  # Primary colors - Main brand/identity colors
+  primary:
+    - name: "Primary Blue"
+      hex: "#4A90D9"
+      usage: "Main interactive elements, buttons, links"
+    - name: "Primary Orange"
+      hex: "#D97B4A"
+      usage: "Action/attack elements, call-to-action"
+
+  # Secondary colors - Supporting colors
+  secondary:
+    - name: "Health Green"
+      hex: "#5DB85D"
+      usage: "Health bars, positive feedback, success states"
+    - name: "Damage Red"
+      hex: "#D95B5B"
+      usage: "Damage indicators, negative feedback, warnings"
+    - name: "Energy Purple"
+      hex: "#9B59B6"
+      usage: "Magic/energy effects, special abilities"
+
+  # Accent colors - Highlights and emphasis
+  accent:
+    - name: "Gold"
+      hex: "#FFD700"
+      usage: "Rewards, achievements, rare items"
+    - name: "Cyan"
+      hex: "#00BCD4"
+      usage: "Information, tutorials, hints"
+
+  # Neutral colors - Backgrounds and text
+  neutrals:
+    - name: "Dark Background"
+      hex: "#1A1A2E"
+      usage: "UI backgrounds, dark areas"
+    - name: "Medium Gray"
+      hex: "#4A4A4A"
+      usage: "Secondary backgrounds, borders"
+    - name: "Light Gray"
+      hex: "#B0B0B0"
+      usage: "Disabled states, inactive elements"
+    - name: "Off White"
+      hex: "#F5F5F5"
+      usage: "Primary text, bright elements"
+
+# =============================================================================
+# POLYCOUNT BUDGETS
+# =============================================================================
+# Maximum polygon counts for different asset types.
+# These are soft limits - exceeding triggers warnings, not errors.
+#
+# Tips for low-poly indie games:
+#   character: 3000-8000
+#   prop: 500-2000
+#   environment: 10000-30000
+#
+# Tips for mid-poly games:
+#   character: 10000-20000
+#   prop: 2000-5000
+#   environment: 30000-100000
+
+polycount:
+  character: 15000      # Player, enemies, NPCs
+  prop: 3000            # Interactive objects, pickups
+  environment: 50000    # Level geometry, terrain
+  vehicle: 20000        # Cars, ships, mounts
+  weapon: 5000          # Held weapons, tools
+  ui: 500               # 3D UI elements
+  vfx: 1000             # Particle meshes
+
+  # Custom types - add your own categories
+  # building: 25000
+  # foliage: 1000
+
+# =============================================================================
+# TEXTURE SETTINGS
+# =============================================================================
+# Constraints for texture assets.
+
+textures:
+  max_resolution: 2048      # Maximum dimension (width or height)
+  min_resolution: 64        # Minimum dimension
+  require_power_of_two: true
+  allow_mipmaps: true
+  filter_mode: "Bilinear"   # Point, Bilinear, Trilinear
+  wrap_mode: "Repeat"       # Repeat, Clamp, Mirror
+
+  # Allowed formats for import
+  # allowed_formats:
+  #   - png
+  #   - tga
+  #   - psd
+
+# =============================================================================
+# AUDIO SETTINGS
+# =============================================================================
+# Constraints for audio assets.
+# These help manage file sizes and ensure consistent audio quality.
+
+audio:
+  max_length_seconds: 30    # Max duration for SFX (music can be longer)
+  max_file_size_kb: 5120    # 5MB max file size
+  sample_rate: 44100        # Standard sample rate
+  require_mono: false       # True for 3D spatial audio
+  allow_compression: true
+
+  # allowed_formats:
+  #   - wav
+  #   - ogg
+
+# =============================================================================
+# UI SETTINGS
+# =============================================================================
+# Constraints for UI elements - accessibility and consistency.
+
+ui:
+  min_font_size: 14         # Minimum readable font size
+  max_font_size: 72         # Maximum header size
+  min_button_size: 44       # Minimum clickable area (pixels)
+  min_touch_target_size: 48 # For mobile - larger touch targets
+  require_accessible_contrast: true
+  min_contrast_ratio: 4.5   # WCAG AA standard
+
+  # allowed_fonts:
+  #   - Roboto
+  #   - Open Sans
+
+# =============================================================================
+# 3D MODEL SETTINGS
+# =============================================================================
+# Import and validation settings for 3D models.
+
+models:
+  scale_unit: 1.0           # 1 unit = 1 meter
+  require_normals: true
+  require_tangents: true    # Required for normal maps
+  require_uvs: true
+  max_bones_per_vertex: 4
+  allow_ngons: false        # Require triangulated meshes
+  # max_texel_density_variance: 0.5
+
+# =============================================================================
+# CUSTOM RULES
+# =============================================================================
+# Add project-specific rules here.
+# These are stored as metadata and can be checked by custom validators.
+
+# custom_rules:
+#   min_lod_levels: 2
+#   require_collision_mesh: true
+#   naming_convention: "PascalCase"
+#   texture_atlas_size: 4096

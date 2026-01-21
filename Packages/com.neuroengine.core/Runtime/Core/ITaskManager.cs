@@ -248,17 +248,5 @@ namespace NeuroEngine.Core
         /// <summary>Progress summary</summary>
         public ConvoyProgress Progress;
     }
-
-    /// <summary>
-    /// Progress summary for a convoy.
-    /// </summary>
-    public class ConvoyProgress
-    {
-        public int TotalTasks;
-        public int PendingTasks;
-        public int InProgressTasks;
-        public int CompletedTasks;
-        public int FailedTasks;
-        public int PercentComplete => TotalTasks > 0 ? (CompletedTasks * 100) / TotalTasks : 0;
-    }
+    // Note: ConvoyProgress is defined in IOrchestration.cs
 }

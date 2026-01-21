@@ -38,10 +38,9 @@ namespace NeuroEngine.Services
         {
             { "UnityEngine.MeshFilter", new HashSet<string> { "mesh" } }, // Accessing .mesh in edit mode creates instance
             { "UnityEngine.MeshCollider", new HashSet<string> { "sharedMesh" } }, // Can cause issues
-            { "UnityEngine.SkinnedMeshRenderer", new HashSet<string> { "sharedMesh" } },
+            { "UnityEngine.SkinnedMeshRenderer", new HashSet<string> { "sharedMesh", "material", "materials" } }, // Combines mesh and material warnings
             { "UnityEngine.Renderer", new HashSet<string> { "material", "materials" } }, // Accessing .material in edit mode creates instance
-            { "UnityEngine.MeshRenderer", new HashSet<string> { "material", "materials" } },
-            { "UnityEngine.SkinnedMeshRenderer", new HashSet<string> { "material", "materials" } }
+            { "UnityEngine.MeshRenderer", new HashSet<string> { "material", "materials" } }
         };
 
         // Components to exclude by default (too verbose, rarely useful for AI, or cause runtime warnings)

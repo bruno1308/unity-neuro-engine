@@ -32,7 +32,7 @@ namespace NeuroEngine.Services
 
         private void EnsureDirectories()
         {
-            string[] categories = { "scenes", "tasks", "convoys", "messages", "validation", "assets", "snapshots" };
+            string[] categories = { "scenes", "tasks", "convoys", "messages", "validation", "assets", "snapshots", "evaluations" };
             foreach (var cat in categories)
             {
                 Directory.CreateDirectory(Path.Combine(_hooksRoot, cat));
