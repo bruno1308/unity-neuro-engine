@@ -74,6 +74,11 @@ hooks/recordings/
 # hooks/tasks/
 # hooks/convoys/
 
+# === TEST ITERATIONS (Local only) ===
+# Iteration folders are for local testing, not tracked in repo
+Assets/Iteration*/
+Assets/Screenshots/
+
 # === BUILD ARTIFACTS ===
 *.apk
 *.aab

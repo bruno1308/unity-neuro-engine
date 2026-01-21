@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ui:UXML xmlns:ui="UnityEngine.UIElements">
-    <ui:VisualElement name="root" class="hud-root">
-        <ui:Label name="score-label" text="Score: 0 / 10" class="score-text" />
-        <ui:VisualElement name="win-panel" class="win-panel" style="display: none;">
-            <ui:Label text="You Win!" class="win-text" />
-        </ui:VisualElement>
-    </ui:VisualElement>
-</ui:UXML>
