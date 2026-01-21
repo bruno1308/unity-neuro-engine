@@ -24,6 +24,8 @@ namespace NeuroEngine.Editor
     /// - Play mode state changes (entering/exiting play mode)
     ///
     /// This ensures VContainer-registered services are preferred when available.
+    ///
+    /// IMPORTANT: Must be called from main thread only (Unity API constraint).
     /// </summary>
     [InitializeOnLoad]
     public static class EditorServiceLocator
@@ -58,7 +60,6 @@ namespace NeuroEngine.Editor
             if (state == PlayModeStateChange.EnteredPlayMode ||
                 state == PlayModeStateChange.EnteredEditMode)
             {
-                Debug.Log($"[EditorServiceLocator] Clearing cache on {state}");
                 Reset();
             }
         }
@@ -196,12 +197,18 @@ namespace NeuroEngine.Editor
 
         /// <summary>
         /// Register a specific instance (useful for testing or custom setup).
+        /// Manually registered instances are marked as "from container" to prevent
+        /// automatic upgrade/replacement.
         /// </summary>
         public static void Register<T>(T instance) where T : class
         {
             lock (_lock)
             {
-                _cache[typeof(T)] = instance;
+                var type = typeof(T);
+                _cache[type] = instance;
+                // Mark as "resolved from container" to prevent automatic upgrade
+                // This ensures manually registered instances are stable
+                _resolvedFromContainer.Add(type);
             }
         }
     }
