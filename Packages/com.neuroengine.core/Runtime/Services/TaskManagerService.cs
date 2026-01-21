@@ -20,6 +20,7 @@ namespace NeuroEngine.Services
         private readonly string _tasksRoot;
         private readonly string _convoysRoot;
         private readonly ConcurrentDictionary<string, AgentTask> _taskCache = new ConcurrentDictionary<string, AgentTask>();
+        private readonly ConcurrentDictionary<string, object> _taskLocks = new ConcurrentDictionary<string, object>();
         private int _taskCounter;
         private readonly object _fileLock = new object();
 
@@ -128,20 +129,24 @@ namespace NeuroEngine.Services
             if (_taskCache.TryGetValue(taskId, out var task))
                 return task;
 
-            // Load from disk
+            // Load from disk (locked to prevent concurrent reads)
             var path = GetTaskPath(taskId);
-            if (File.Exists(path))
-            {
-                lock (_fileLock)
-                {
-                    var json = File.ReadAllText(path);
-                    task = JsonConvert.DeserializeObject<AgentTask>(json, _jsonSettings);
-                }
-                _taskCache.TryAdd(taskId, task);
-                return task;
-            }
+            if (!File.Exists(path))
+                return null;
 
-            return null;
+            lock (_fileLock)
+            {
+                // Double-check cache after acquiring lock (another thread may have loaded it)
+                if (_taskCache.TryGetValue(taskId, out task))
+                    return task;
+
+                var json = File.ReadAllText(path);
+                task = JsonConvert.DeserializeObject<AgentTask>(json, _jsonSettings);
+
+                // Use TryAdd - if another thread added it, we just discard our copy
+                _taskCache.TryAdd(taskId, task);
+                return _taskCache[taskId]; // Return the cached instance (may be ours or theirs)
+            }
         }
 
         public void UpdateProgress(string taskId, TaskProgress progress)
@@ -153,9 +158,13 @@ namespace NeuroEngine.Services
                 return;
             }
 
-            progress.LastUpdated = DateTime.UtcNow.ToString("o");
-            task.Progress = progress;
-            SaveTask(task);
+            // Lock on the specific task for atomic update
+            lock (GetTaskLock(taskId))
+            {
+                progress.LastUpdated = DateTime.UtcNow.ToString("o");
+                task.Progress = progress;
+                SaveTask(task);
+            }
         }
 
         public void StartTask(string taskId, string agentName)
@@ -167,24 +176,28 @@ namespace NeuroEngine.Services
                 return;
             }
 
-            if (!ValidateStateTransition(task.Status, "in_progress"))
+            // Lock on the specific task for atomic state transition
+            lock (GetTaskLock(taskId))
             {
-                Debug.LogWarning($"[TaskManager] Invalid state transition for task {taskId}: {task.Status} -> in_progress");
-                return;
+                if (!ValidateStateTransition(task.Status, "in_progress"))
+                {
+                    Debug.LogWarning($"[TaskManager] Invalid state transition for task {taskId}: {task.Status} -> in_progress");
+                    return;
+                }
+
+                task.Status = "in_progress";
+                task.AssignedAgent = agentName;
+                task.StartedAt = DateTime.UtcNow.ToString("o");
+                task.Progress = new TaskProgress
+                {
+                    CurrentStep = "Starting",
+                    PercentComplete = 0,
+                    LastUpdated = DateTime.UtcNow.ToString("o")
+                };
+                task.TranscriptPath = $"hooks/tasks/{taskId}/transcript.json";
+
+                SaveTask(task);
             }
-
-            task.Status = "in_progress";
-            task.AssignedAgent = agentName;
-            task.StartedAt = DateTime.UtcNow.ToString("o");
-            task.Progress = new TaskProgress
-            {
-                CurrentStep = "Starting",
-                PercentComplete = 0,
-                LastUpdated = DateTime.UtcNow.ToString("o")
-            };
-            task.TranscriptPath = $"hooks/tasks/{taskId}/transcript.json";
-
-            SaveTask(task);
             Debug.Log($"[TaskManager] Task {taskId} started by {agentName}");
         }
 
@@ -197,23 +210,27 @@ namespace NeuroEngine.Services
                 return;
             }
 
-            if (!ValidateStateTransition(task.Status, "completed"))
+            // Lock on the specific task for atomic state transition
+            lock (GetTaskLock(taskId))
             {
-                Debug.LogWarning($"[TaskManager] Invalid state transition for task {taskId}: {task.Status} -> completed");
-                return;
+                if (!ValidateStateTransition(task.Status, "completed"))
+                {
+                    Debug.LogWarning($"[TaskManager] Invalid state transition for task {taskId}: {task.Status} -> completed");
+                    return;
+                }
+
+                task.Status = "completed";
+                task.CompletedAt = DateTime.UtcNow.ToString("o");
+                task.Result = result;
+                task.Progress = new TaskProgress
+                {
+                    CurrentStep = "Completed",
+                    PercentComplete = 100,
+                    LastUpdated = DateTime.UtcNow.ToString("o")
+                };
+
+                SaveTask(task);
             }
-
-            task.Status = "completed";
-            task.CompletedAt = DateTime.UtcNow.ToString("o");
-            task.Result = result;
-            task.Progress = new TaskProgress
-            {
-                CurrentStep = "Completed",
-                PercentComplete = 100,
-                LastUpdated = DateTime.UtcNow.ToString("o")
-            };
-
-            SaveTask(task);
             Debug.Log($"[TaskManager] Task {taskId} completed: {result.Summary}");
         }
 
@@ -226,21 +243,25 @@ namespace NeuroEngine.Services
                 return;
             }
 
-            if (!ValidateStateTransition(task.Status, "failed"))
+            // Lock on the specific task for atomic state transition
+            lock (GetTaskLock(taskId))
             {
-                Debug.LogWarning($"[TaskManager] Invalid state transition for task {taskId}: {task.Status} -> failed");
-                return;
-            }
+                if (!ValidateStateTransition(task.Status, "failed"))
+                {
+                    Debug.LogWarning($"[TaskManager] Invalid state transition for task {taskId}: {task.Status} -> failed");
+                    return;
+                }
 
-            task.Status = "failed";
-            task.CompletedAt = DateTime.UtcNow.ToString("o");
-            task.ErrorMessage = errorMessage;
-            if (task.Progress != null)
-            {
-                task.Progress.CurrentStep = "Failed";
-            }
+                task.Status = "failed";
+                task.CompletedAt = DateTime.UtcNow.ToString("o");
+                task.ErrorMessage = errorMessage;
+                if (task.Progress != null)
+                {
+                    task.Progress.CurrentStep = "Failed";
+                }
 
-            SaveTask(task);
+                SaveTask(task);
+            }
             Debug.Log($"[TaskManager] Task {taskId} failed: {errorMessage}");
         }
 
@@ -253,21 +274,25 @@ namespace NeuroEngine.Services
                 return;
             }
 
-            if (!ValidateStateTransition(task.Status, "cancelled"))
+            // Lock on the specific task for atomic state transition
+            lock (GetTaskLock(taskId))
             {
-                Debug.LogWarning($"[TaskManager] Invalid state transition for task {taskId}: {task.Status} -> cancelled");
-                return;
-            }
+                if (!ValidateStateTransition(task.Status, "cancelled"))
+                {
+                    Debug.LogWarning($"[TaskManager] Invalid state transition for task {taskId}: {task.Status} -> cancelled");
+                    return;
+                }
 
-            task.Status = "cancelled";
-            task.CompletedAt = DateTime.UtcNow.ToString("o");
-            task.ErrorMessage = $"Cancelled: {reason}";
-            if (task.Progress != null)
-            {
-                task.Progress.CurrentStep = "Cancelled";
-            }
+                task.Status = "cancelled";
+                task.CompletedAt = DateTime.UtcNow.ToString("o");
+                task.ErrorMessage = $"Cancelled: {reason}";
+                if (task.Progress != null)
+                {
+                    task.Progress.CurrentStep = "Cancelled";
+                }
 
-            SaveTask(task);
+                SaveTask(task);
+            }
             Debug.Log($"[TaskManager] Task {taskId} cancelled: {reason}");
         }
 
@@ -459,12 +484,23 @@ namespace NeuroEngine.Services
         }
 
         /// <summary>
+        /// Gets the lock object for a specific task (creates if needed).
+        /// </summary>
+        private object GetTaskLock(string taskId)
+        {
+            return _taskLocks.GetOrAdd(taskId, _ => new object());
+        }
+
+        /// <summary>
         /// Validate that a state transition is allowed.
         /// </summary>
         private bool ValidateStateTransition(string currentState, string newState)
         {
             if (string.IsNullOrEmpty(currentState))
                 return true; // Allow any transition from null state
+
+            if (string.IsNullOrEmpty(newState))
+                return false; // newState must be specified
 
             if (!_validTransitions.TryGetValue(currentState, out var allowedStates))
                 return false;

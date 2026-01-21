@@ -236,10 +236,12 @@ namespace NeuroEngine.Services
 
         /// <summary>
         /// Write file atomically using temp file + rename pattern (async version).
+        /// Uses unique temp filename to avoid race conditions between concurrent writes.
         /// </summary>
         private async Task WriteFileAtomicAsync(string path, string content)
         {
-            var tempPath = path + ".tmp";
+            // Use unique temp filename to avoid race conditions
+            var tempPath = path + $".{Guid.NewGuid():N}.tmp";
             try
             {
                 // Write to temp file first
