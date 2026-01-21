@@ -64,4 +64,4 @@ public class MyService
 
 ## Documentation
 
-See `Docs/Final.md` in the project root for full architecture documentation.
+See `Docs/Architecture.md` in the project root for full architecture documentation.

@@ -10,7 +10,7 @@ Run pre-flight validation checks before proceeding with tasks.
 
 ## Context
 
-### Validation Tiers (from Final.md)
+### Validation Tiers (from Architecture.md)
 | Tier | Type | Checks |
 |------|------|--------|
 | 1 | Syntactic | Compilation, null refs |

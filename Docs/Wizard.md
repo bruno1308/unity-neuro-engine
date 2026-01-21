@@ -129,7 +129,7 @@ Create these directories and files in the Unity project root:
 ├── CLAUDE.md              # Entry point (minimal, points to .claude/)
 ├── Docs/
 │   ├── Wizard.md          # This file
-│   ├── Final.md           # Architecture documentation
+│   ├── Architecture.md           # Architecture documentation
 │   ├── ENGINE_PROBLEMS.md # Known issues requiring manual intervention
 │   └── examples/          # Code examples
 └── hooks/
@@ -300,7 +300,7 @@ hooks/recordings/
 This is a Neuro-Engine Protocol project for autonomous Unity game development.
 
 ## Architecture
-See `Docs/Final.md` for full architecture documentation.
+See `Docs/Architecture.md` for full architecture documentation.
 
 ## Key Directories
 - `Docs/` - Architecture and examples

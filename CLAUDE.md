@@ -1,5 +1,9 @@
 # CLAUDE.md - Neuro-Engine Protocol
 
+## Architecture
+
+See `Docs/Architecture.md` for the 7-layer architecture we are trying to achieve.
+
 ## Quick Start
 
 1. **Read** `.claude/ARCHITECTURE.md` for skills & agents overview
@@ -18,9 +22,6 @@ BEFORE asking the user to do ANYTHING:
 NEVER say "please do X" when you could do X yourself.
 ```
 
-## Architecture
-
-See `Docs/Final.md` for the 7-layer architecture.
 
 ## Key Paths
 

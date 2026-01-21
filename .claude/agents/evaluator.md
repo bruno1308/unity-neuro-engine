@@ -49,7 +49,7 @@ Grade outcomes against quality criteria using multi-tier verification.
 }
 ```
 
-### Pass Criteria (from Final.md)
+### Pass Criteria (from Architecture.md)
 - **pass@k**: Success in k attempts (capability)
 - **pass^k**: Success in ALL k attempts (reliability)
 

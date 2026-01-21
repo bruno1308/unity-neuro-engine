@@ -111,7 +111,7 @@ The `IStateProvider` interface exists but has no implementation.
 ### Documentation
 | File | Purpose | Status |
 |------|---------|--------|
-| `Docs/Final.md` | 7-layer architecture specification | ✅ Complete |
+| `Docs/Architecture.md` | 7-layer architecture specification | ✅ Complete |
 | `Docs/Wizard.md` | Setup guide for new projects | ✅ Complete |
 | `Docs/ENGINE_PROBLEMS.md` | Known issues and solutions | ✅ Ongoing |
 | `CLAUDE.md` | Entry point for Claude sessions | ✅ Complete |
@@ -154,7 +154,7 @@ Engine/
 │   ├── skills/                  # ✅ 5 skills defined
 │   └── agents/                  # ✅ 6 agents defined
 ├── Docs/
-│   ├── Final.md                 # ✅ Architecture
+│   ├── Architecture.md                 # ✅ Architecture
 │   ├── Wizard.md                # ✅ Setup guide
 │   └── ENGINE_PROBLEMS.md       # ✅ Known issues
 ├── hooks/                       # ✅ Directory structure

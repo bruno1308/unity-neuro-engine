@@ -153,7 +153,7 @@ public class ProjectStructureGenerator
 - `.env.template`
 - `.gitignore`
 - `CLAUDE.md`
-- `Docs/` with Wizard.md and Final.md
+- `Docs/` with Wizard.md and Architecture.md
 
 ### 6. Connection Tester
 
