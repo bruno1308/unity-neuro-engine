@@ -14,8 +14,12 @@ namespace NeuroEngine.Core
             // Layer 1: Configuration
             builder.Register<EnvConfigService>(Lifetime.Singleton).As<IEnvConfig>();
 
-            // Layer 2: Observation
+            // Layer 2: Observation (Eyes)
             builder.Register<SceneStateCaptureService>(Lifetime.Singleton).As<ISceneStateCapture>();
+            builder.Register<MissingReferenceDetector>(Lifetime.Singleton).As<IMissingReferenceDetector>();
+            builder.Register<UIAccessibilityService>(Lifetime.Singleton).As<IUIAccessibility>();
+            builder.Register<SpatialAnalysisService>(Lifetime.Singleton).As<ISpatialAnalysis>();
+            builder.Register<ValidationRulesEngine>(Lifetime.Singleton).As<IValidationRules>();
 
             // Layer 4: Persistence
             builder.Register<HooksWriterService>(Lifetime.Singleton).As<IHooksWriter>();
