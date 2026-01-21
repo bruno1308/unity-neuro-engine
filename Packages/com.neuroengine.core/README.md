@@ -48,7 +48,7 @@ Add to your `Packages/manifest.json`:
 
 This package is designed to work with the **Neuro-Engine Claude Plugin**:
 
-- **Repository**: https://github.com/bruno1308/neuro-engine-claude-plugin
+- **Repository**: https://github.com/bruno1308/unity-neuro-engine-plugin
 - **Purpose**: Provides commands, skills, and agents for Claude Code
 
 Install both for full autonomous development capabilities.
@@ -307,7 +307,7 @@ The `MeshyTexturePostprocessor` should auto-configure. If not:
 3. Run `/neuro-engine:evaluate` to verify
 4. Submit pull request
 
-For Claude plugin changes, contribute to [neuro-engine-claude-plugin](https://github.com/bruno1308/neuro-engine-claude-plugin).
+For Claude plugin changes, contribute to [unity-neuro-engine-plugin](https://github.com/bruno1308/unity-neuro-engine-plugin).
 
 ## License
 
@@ -315,6 +315,6 @@ MIT License - see [LICENSE](LICENSE)
 
 ## Related
 
-- [Neuro-Engine Claude Plugin](https://github.com/bruno1308/neuro-engine-claude-plugin) - Claude Code integration
+- [Neuro-Engine Claude Plugin](https://github.com/bruno1308/unity-neuro-engine-plugin) - Claude Code integration
 - [VContainer](https://github.com/hadashiA/VContainer) - Dependency injection
 - [Unity-MCP](https://github.com/CoplayDev/unity-mcp) - MCP bridge for Unity
