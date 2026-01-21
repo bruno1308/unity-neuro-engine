@@ -44,6 +44,15 @@ namespace NeuroEngine.Services
             _hooksWriter = hooksWriter;
         }
 
+        /// <summary>
+        /// Parameterless constructor for editor/standalone use.
+        /// CaptureAndSaveAsync will throw if called without IHooksWriter.
+        /// </summary>
+        public SceneStateCaptureService()
+        {
+            _hooksWriter = null;
+        }
+
         public SceneSnapshot CaptureScene()
         {
             return CaptureScene(new SceneCaptureOptions());
@@ -77,6 +86,9 @@ namespace NeuroEngine.Services
 
         public async Task CaptureAndSaveAsync(string sceneName)
         {
+            if (_hooksWriter == null)
+                throw new InvalidOperationException("CaptureAndSaveAsync requires IHooksWriter. Use constructor with IHooksWriter parameter.");
+
             var snapshot = CaptureScene();
             var filename = $"{sceneName}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.json";
             await _hooksWriter.WriteAsync($"scenes/{sceneName}", filename, snapshot);

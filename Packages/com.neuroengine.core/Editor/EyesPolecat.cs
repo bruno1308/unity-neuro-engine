@@ -1,11 +1,10 @@
 #if UNITY_EDITOR
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using NeuroEngine.Core;
 using NeuroEngine.Services;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEditor.SceneManagement;
@@ -28,6 +27,7 @@ namespace NeuroEngine.Editor
 
         // Services (created on demand since we're in Editor)
         // Note: We don't use DI here since this is editor-only and needs to work standalone
+        private static SceneStateCaptureService _sceneCapture;
         private static UIAccessibilityService _uiAccessibility;
         private static SpatialAnalysisService _spatialAnalysis;
         private static ValidationRulesEngine _validationRules;
@@ -63,6 +63,7 @@ namespace NeuroEngine.Editor
 
         private static void InitializeServices()
         {
+            _sceneCapture ??= new SceneStateCaptureService();
             _uiAccessibility ??= new UIAccessibilityService();
             _spatialAnalysis ??= new SpatialAnalysisService();
             _validationRules ??= new ValidationRulesEngine();
@@ -115,8 +116,8 @@ namespace NeuroEngine.Editor
 
             try
             {
-                // Scene state (captured directly without service dependency)
-                state.Scene = CaptureSceneSnapshot();
+                // Scene state - use shared service to avoid code duplication
+                state.Scene = _sceneCapture.CaptureScene();
             }
             catch (Exception e)
             {
@@ -169,7 +170,11 @@ namespace NeuroEngine.Editor
 
             try
             {
-                var json = JsonUtility.ToJson(state, true);
+                var json = JsonConvert.SerializeObject(state, Formatting.Indented, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
                 File.WriteAllText(fullPath, json);
 
                 // Track recent snapshots
@@ -188,157 +193,6 @@ namespace NeuroEngine.Editor
                 Debug.LogError($"[EyesPolecat] Failed to save snapshot: {e.Message}");
                 return null;
             }
-        }
-
-        // Types to skip when serializing field values
-        private static readonly HashSet<string> SkipFieldTypes = new HashSet<string>
-        {
-            "UnityEngine.Mesh", "UnityEngine.Material", "UnityEngine.Shader",
-            "UnityEngine.Texture", "UnityEngine.Texture2D", "UnityEngine.RenderTexture"
-        };
-
-        // Components to exclude by default
-        private static readonly HashSet<string> ExcludeComponents = new HashSet<string>
-        {
-            "Transform", "RectTransform", "CanvasRenderer"
-        };
-
-        /// <summary>
-        /// Captures scene snapshot with component field values (editor-only, no DI).
-        /// </summary>
-        private static SceneSnapshot CaptureSceneSnapshot()
-        {
-            var scene = SceneManager.GetActiveScene();
-            var roots = scene.GetRootGameObjects();
-
-            int totalObjects = 0;
-            int totalComponentsWithData = 0;
-
-            var snapshot = new SceneSnapshot
-            {
-                SceneName = scene.name,
-                Timestamp = DateTime.UtcNow.ToString("o"),
-                RootObjects = new GameObjectSnapshot[roots.Length]
-            };
-
-            for (int i = 0; i < roots.Length; i++)
-            {
-                snapshot.RootObjects[i] = CaptureGameObjectSnapshot(roots[i], ref totalObjects, ref totalComponentsWithData);
-            }
-
-            snapshot.TotalObjectCount = totalObjects;
-            snapshot.TotalComponentsWithData = totalComponentsWithData;
-
-            return snapshot;
-        }
-
-        private static GameObjectSnapshot CaptureGameObjectSnapshot(GameObject go, ref int totalObjects, ref int totalComponentsWithData)
-        {
-            totalObjects++;
-            var transform = go.transform;
-            var components = go.GetComponents<Component>();
-            var componentNames = new List<string>();
-            var componentSnapshots = new List<ComponentSnapshot>();
-
-            foreach (var comp in components)
-            {
-                if (comp == null) continue;
-                var typeName = comp.GetType().Name;
-                componentNames.Add(typeName);
-
-                // Capture component data (skip Transform, etc.)
-                if (!ExcludeComponents.Contains(typeName))
-                {
-                    var compSnapshot = CaptureComponent(comp);
-                    if (compSnapshot != null && compSnapshot.Fields.Count > 0)
-                    {
-                        componentSnapshots.Add(compSnapshot);
-                        totalComponentsWithData++;
-                    }
-                }
-            }
-
-            var snapshot = new GameObjectSnapshot
-            {
-                Name = go.name,
-                Active = go.activeSelf,
-                Tag = go.tag,
-                Layer = go.layer,
-                Position = new[] { transform.position.x, transform.position.y, transform.position.z },
-                Rotation = new[] { transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z },
-                Scale = new[] { transform.localScale.x, transform.localScale.y, transform.localScale.z },
-                Components = componentNames.ToArray(),
-                ComponentData = componentSnapshots.Count > 0 ? componentSnapshots.ToArray() : null,
-                Children = new GameObjectSnapshot[transform.childCount]
-            };
-
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                snapshot.Children[i] = CaptureGameObjectSnapshot(transform.GetChild(i).gameObject, ref totalObjects, ref totalComponentsWithData);
-            }
-
-            return snapshot;
-        }
-
-        private static ComponentSnapshot CaptureComponent(Component comp)
-        {
-            if (comp == null) return null;
-
-            var type = comp.GetType();
-            var snapshot = new ComponentSnapshot
-            {
-                Type = type.Name,
-                FullType = type.FullName,
-                Enabled = comp is Behaviour behaviour ? behaviour.enabled : true,
-                Fields = new Dictionary<string, object>()
-            };
-
-            try
-            {
-                var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                foreach (var field in fields)
-                {
-                    if (field.IsPrivate && !field.IsDefined(typeof(SerializeField), true)) continue;
-                    if (field.IsDefined(typeof(NonSerializedAttribute), true)) continue;
-                    if (field.IsDefined(typeof(HideInInspector), true)) continue;
-                    if (SkipFieldTypes.Contains(field.FieldType.FullName)) continue;
-
-                    try
-                    {
-                        var value = field.GetValue(comp);
-                        var serialized = SerializeFieldValue(value, field.FieldType);
-                        if (serialized != null)
-                            snapshot.Fields[field.Name] = serialized;
-                    }
-                    catch { }
-                }
-            }
-            catch { }
-
-            return snapshot;
-        }
-
-        private static object SerializeFieldValue(object value, Type type)
-        {
-            if (value == null) return null;
-            if (type.IsPrimitive || type == typeof(string)) return value;
-            if (type.IsEnum) return value.ToString();
-
-            if (typeof(UnityEngine.Object).IsAssignableFrom(type))
-            {
-                var obj = value as UnityEngine.Object;
-                return obj != null ? new { _type = type.Name, _name = obj.name } : null;
-            }
-
-            if (type == typeof(Vector2)) { var v = (Vector2)value; return new float[] { v.x, v.y }; }
-            if (type == typeof(Vector3)) { var v = (Vector3)value; return new float[] { v.x, v.y, v.z }; }
-            if (type == typeof(Vector4)) { var v = (Vector4)value; return new float[] { v.x, v.y, v.z, v.w }; }
-            if (type == typeof(Quaternion)) { var q = (Quaternion)value; return new float[] { q.x, q.y, q.z, q.w }; }
-            if (type == typeof(Color)) { var c = (Color)value; return new float[] { c.r, c.g, c.b, c.a }; }
-            if (type == typeof(Rect)) { var r = (Rect)value; return new float[] { r.x, r.y, r.width, r.height }; }
-            if (type == typeof(LayerMask)) return ((LayerMask)value).value;
-
-            return null;
         }
 
         public static string CaptureScreenshot(string sceneName)

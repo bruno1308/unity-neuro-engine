@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using NeuroEngine.Core;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace NeuroEngine.Services
@@ -37,13 +38,21 @@ namespace NeuroEngine.Services
             }
         }
 
+        // Use Newtonsoft.Json for proper Dictionary<string, object> serialization
+        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
+        {
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Ignore,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+
         public async Task WriteAsync(string category, string filename, object data)
         {
             var dir = Path.Combine(_hooksRoot, category);
             Directory.CreateDirectory(dir);
 
             var path = Path.Combine(dir, filename);
-            var json = JsonUtility.ToJson(data, true);
+            var json = JsonConvert.SerializeObject(data, _jsonSettings);
 
             await File.WriteAllTextAsync(path, json);
         }
@@ -56,7 +65,7 @@ namespace NeuroEngine.Services
                 return default;
 
             var json = await File.ReadAllTextAsync(path);
-            return JsonUtility.FromJson<T>(json);
+            return JsonConvert.DeserializeObject<T>(json, _jsonSettings);
         }
 
         public bool Exists(string category, string filename)
