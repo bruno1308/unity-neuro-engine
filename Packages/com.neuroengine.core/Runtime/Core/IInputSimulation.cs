@@ -58,7 +58,6 @@ namespace NeuroEngine.Core
     /// <summary>
     /// Result of an input simulation action.
     /// </summary>
-    [System.Serializable]
     public class InputSimulationResult
     {
         public bool Success;

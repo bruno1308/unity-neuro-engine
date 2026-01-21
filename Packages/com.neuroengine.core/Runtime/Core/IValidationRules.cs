@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace NeuroEngine.Core
@@ -48,8 +49,8 @@ namespace NeuroEngine.Core
 
     /// <summary>
     /// A validation rule definition.
+    /// Note: Not marked [Serializable] - we use Newtonsoft.Json for serialization.
     /// </summary>
-    [System.Serializable]
     public class ValidationRule
     {
         /// <summary>
@@ -70,7 +71,7 @@ namespace NeuroEngine.Core
         /// <summary>
         /// The validation function (null for YAML-loaded rules).
         /// </summary>
-        [NonSerialized]
+        [JsonIgnore]
         public Func<GameObject, ValidationResult> Validator;
 
         /// <summary>
@@ -95,7 +96,6 @@ namespace NeuroEngine.Core
     /// <summary>
     /// Result of a single validation check.
     /// </summary>
-    [System.Serializable]
     public class ValidationResult
     {
         public bool Passed;
@@ -109,7 +109,6 @@ namespace NeuroEngine.Core
     /// <summary>
     /// Complete validation report.
     /// </summary>
-    [System.Serializable]
     public class ValidationReport
     {
         public List<ValidationResult> Results = new List<ValidationResult>();

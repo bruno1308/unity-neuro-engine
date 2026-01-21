@@ -33,8 +33,8 @@ namespace NeuroEngine.Core
 
     /// <summary>
     /// Report containing the results of a missing reference scan.
+    /// Note: Not marked [Serializable] - we use Newtonsoft.Json for serialization.
     /// </summary>
-    [System.Serializable]
     public class MissingReferenceReport
     {
         /// <summary>
@@ -87,7 +87,6 @@ namespace NeuroEngine.Core
     /// <summary>
     /// Represents a single missing/null serialized field reference.
     /// </summary>
-    [System.Serializable]
     public class MissingReference
     {
         /// <summary>

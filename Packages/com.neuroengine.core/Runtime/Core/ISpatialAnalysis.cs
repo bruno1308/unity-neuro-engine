@@ -38,8 +38,8 @@ namespace NeuroEngine.Core
 
     /// <summary>
     /// Complete spatial analysis report.
+    /// Note: Not marked [Serializable] - we use Newtonsoft.Json for serialization.
     /// </summary>
-    [System.Serializable]
     public class SpatialReport
     {
         public List<OffScreenObject> OffScreenObjects = new List<OffScreenObject>();
@@ -53,7 +53,6 @@ namespace NeuroEngine.Core
     /// <summary>
     /// An object detected outside the camera's view frustum.
     /// </summary>
-    [System.Serializable]
     public class OffScreenObject
     {
         public string ObjectPath;
@@ -65,7 +64,6 @@ namespace NeuroEngine.Core
     /// <summary>
     /// An object with unusual scale.
     /// </summary>
-    [System.Serializable]
     public class ScaleAnomaly
     {
         public string ObjectPath;
@@ -76,7 +74,6 @@ namespace NeuroEngine.Core
     /// <summary>
     /// Two colliders that are overlapping.
     /// </summary>
-    [System.Serializable]
     public class ColliderOverlap
     {
         public string Object1Path;

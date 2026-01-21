@@ -25,8 +25,9 @@ namespace NeuroEngine.Core
 
     /// <summary>
     /// A game event that AI agents should be notified about.
+    /// Note: Not marked [Serializable] - we use Newtonsoft.Json for serialization
+    /// as Unity's JsonUtility cannot handle Dictionary fields.
     /// </summary>
-    [Serializable]
     public class GameEvent
     {
         /// <summary>Event type identifier (e.g., "phase_change", "player_death", "action_required")</summary>
@@ -60,8 +61,8 @@ namespace NeuroEngine.Core
     /// <summary>
     /// Snapshot of game state for AI context.
     /// Games should extend this with game-specific properties.
+    /// Note: Not marked [Serializable] - we use Newtonsoft.Json for serialization.
     /// </summary>
-    [Serializable]
     public class GameStateSnapshot
     {
         /// <summary>Current game phase/state name</summary>

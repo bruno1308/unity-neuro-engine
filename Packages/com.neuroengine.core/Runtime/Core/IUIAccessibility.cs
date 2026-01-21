@@ -36,8 +36,8 @@ namespace NeuroEngine.Core
 
     /// <summary>
     /// A graph of all UI elements in the current scene.
+    /// Note: Not marked [Serializable] - we use Newtonsoft.Json for serialization.
     /// </summary>
-    [System.Serializable]
     public class UIGraph
     {
         /// <summary>
@@ -73,8 +73,8 @@ namespace NeuroEngine.Core
 
     /// <summary>
     /// Represents a single UI element with its state and properties.
+    /// Note: Not marked [Serializable] - we use Newtonsoft.Json for serialization.
     /// </summary>
-    [System.Serializable]
     public class UIElement
     {
         /// <summary>

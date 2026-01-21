@@ -28,8 +28,9 @@ namespace NeuroEngine.Core
 
     /// <summary>
     /// Options for controlling scene capture behavior.
+    /// Note: Not marked [Serializable] - we use Newtonsoft.Json for serialization.
+    /// Unity's JsonUtility cannot handle Dictionary fields and causes depth warnings.
     /// </summary>
-    [System.Serializable]
     public class SceneCaptureOptions
     {
         /// <summary>
@@ -57,8 +58,8 @@ namespace NeuroEngine.Core
 
     /// <summary>
     /// Represents a snapshot of a scene's state.
+    /// Note: Not marked [Serializable] - we use Newtonsoft.Json for serialization.
     /// </summary>
-    [System.Serializable]
     public class SceneSnapshot
     {
         public string SceneName;
@@ -78,8 +79,8 @@ namespace NeuroEngine.Core
 
     /// <summary>
     /// Represents a snapshot of a GameObject's state.
+    /// Note: Not marked [Serializable] - we use Newtonsoft.Json for serialization.
     /// </summary>
-    [System.Serializable]
     public class GameObjectSnapshot
     {
         public string Name;
@@ -106,8 +107,8 @@ namespace NeuroEngine.Core
     /// <summary>
     /// Represents a snapshot of a component's state including field values.
     /// This enables AI to query actual game state, not just structure.
+    /// Note: Not marked [Serializable] - we use Newtonsoft.Json for serialization.
     /// </summary>
-    [System.Serializable]
     public class ComponentSnapshot
     {
         /// <summary>
