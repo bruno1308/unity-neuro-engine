@@ -48,21 +48,9 @@ Add to `manifest.json`:
 }
 ```
 
-### 4. Configure
+### 4. Configure (Optional)
 
-Create `.mcp.json` in your project root:
-```json
-{
-  "mcpServers": {
-    "unity-mcp": {
-      "command": "uvx",
-      "args": ["--from", "mcpforunityserver", "mcp-for-unity", "--transport", "stdio"]
-    }
-  }
-}
-```
-
-Optional - for asset generation, create `.env`:
+For AI asset generation, create `.env` in your project root:
 ```env
 MESHY_API_KEY=your_key
 ELEVENLABS_API_KEY=your_key
