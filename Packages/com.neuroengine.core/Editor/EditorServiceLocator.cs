@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using NeuroEngine.Core;
 using NeuroEngine.Services;
+using UnityEditor;
 using UnityEngine;
 using VContainer;
 
@@ -18,9 +19,13 @@ namespace NeuroEngine.Editor
     /// 1. If VContainer LifetimeScope exists → resolve from container
     /// 2. Otherwise → create standalone instances (editor-only fallback)
     ///
-    /// Services are cached for the lifetime of the editor session.
-    /// Call Reset() on domain reload if needed.
+    /// Cache is automatically cleared on:
+    /// - Domain reload (via InitializeOnLoad)
+    /// - Play mode state changes (entering/exiting play mode)
+    ///
+    /// This ensures VContainer-registered services are preferred when available.
     /// </summary>
+    [InitializeOnLoad]
     public static class EditorServiceLocator
     {
         // Cached service instances (fallback when no DI container)
@@ -28,6 +33,35 @@ namespace NeuroEngine.Editor
 
         // Lock for thread safety
         private static readonly object _lock = new();
+
+        // Track whether we've resolved from container (vs fallback)
+        private static readonly HashSet<Type> _resolvedFromContainer = new();
+
+        /// <summary>
+        /// Static constructor - called on domain reload via [InitializeOnLoad]
+        /// </summary>
+        static EditorServiceLocator()
+        {
+            // Clear cache on domain reload
+            Reset();
+
+            // Subscribe to play mode changes to clear cache when VContainer becomes available/unavailable
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+        }
+
+        private static void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            // Clear cache on any play mode transition
+            // This ensures:
+            // 1. When entering play mode: VContainer services can be resolved fresh
+            // 2. When exiting play mode: Fallback instances are created fresh (no stale references)
+            if (state == PlayModeStateChange.EnteredPlayMode ||
+                state == PlayModeStateChange.EnteredEditMode)
+            {
+                Debug.Log($"[EditorServiceLocator] Clearing cache on {state}");
+                Reset();
+            }
+        }
 
         /// <summary>
         /// Get a service instance. Tries VContainer first, falls back to manual creation.
@@ -41,6 +75,25 @@ namespace NeuroEngine.Editor
                 // Check cache first
                 if (_cache.TryGetValue(type, out var cached))
                 {
+                    // If we previously resolved from container, trust the cache
+                    // If it was a fallback instance, check if container is now available
+                    if (_resolvedFromContainer.Contains(type))
+                    {
+                        return (T)cached;
+                    }
+
+                    // Fallback instance cached - check if VContainer is now available
+                    if (EditorApplication.isPlayingOrWillChangePlaymode)
+                    {
+                        var containerResolved = TryResolveFromContainer<T>();
+                        if (containerResolved != null)
+                        {
+                            // Upgrade to container-resolved instance
+                            _cache[type] = containerResolved;
+                            _resolvedFromContainer.Add(type);
+                            return containerResolved;
+                        }
+                    }
                     return (T)cached;
                 }
 
@@ -49,6 +102,7 @@ namespace NeuroEngine.Editor
                 if (resolved != null)
                 {
                     _cache[type] = resolved;
+                    _resolvedFromContainer.Add(type);
                     return resolved;
                 }
 
@@ -57,6 +111,7 @@ namespace NeuroEngine.Editor
                 if (instance != null)
                 {
                     _cache[type] = instance;
+                    // Don't add to _resolvedFromContainer - this is a fallback
                 }
                 return instance;
             }
@@ -128,13 +183,14 @@ namespace NeuroEngine.Editor
         }
 
         /// <summary>
-        /// Clear all cached instances. Call on domain reload or when container changes.
+        /// Clear all cached instances. Called automatically on domain reload and play mode changes.
         /// </summary>
         public static void Reset()
         {
             lock (_lock)
             {
                 _cache.Clear();
+                _resolvedFromContainer.Clear();
             }
         }
 

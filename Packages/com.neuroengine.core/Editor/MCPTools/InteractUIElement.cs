@@ -78,7 +78,7 @@ namespace NeuroEngine.Editor.MCPTools
                 var toggle = doc.rootVisualElement.Q<UnityEngine.UIElements.Toggle>(elementName);
                 if (toggle != null && toggle.enabledSelf)
                 {
-                    return HandleUIToolkitToggle(toggle, action, doc.gameObject.name);
+                    return HandleUIToolkitToggle(toggle, action, @params, doc.gameObject.name);
                 }
 
                 // Try Slider
@@ -105,7 +105,7 @@ namespace NeuroEngine.Editor.MCPTools
             return null;
         }
 
-        private static object HandleUIToolkitToggle(UnityEngine.UIElements.Toggle toggle, string action, string docName)
+        private static object HandleUIToolkitToggle(UnityEngine.UIElements.Toggle toggle, string action, JObject @params, string docName)
         {
             bool previousValue = toggle.value;
 

@@ -45,6 +45,11 @@ namespace NeuroEngine.Core
         IReadOnlyList<KeyCode> GetHeldKeys();
 
         /// <summary>
+        /// Get current simulated mouse position.
+        /// </summary>
+        Vector2 GetMousePosition();
+
+        /// <summary>
         /// Release all held keys.
         /// </summary>
         void ReleaseAll();
