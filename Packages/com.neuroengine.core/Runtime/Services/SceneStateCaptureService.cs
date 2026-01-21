@@ -33,6 +33,17 @@ namespace NeuroEngine.Services
             "UnityEngine.RuntimeAnimatorController"
         };
 
+        // Properties that should never be accessed during serialization (cause instantiation/warnings in edit mode)
+        private static readonly Dictionary<string, HashSet<string>> SkipProperties = new Dictionary<string, HashSet<string>>
+        {
+            { "UnityEngine.MeshFilter", new HashSet<string> { "mesh" } }, // Accessing .mesh in edit mode creates instance
+            { "UnityEngine.MeshCollider", new HashSet<string> { "sharedMesh" } }, // Can cause issues
+            { "UnityEngine.SkinnedMeshRenderer", new HashSet<string> { "sharedMesh" } },
+            { "UnityEngine.Renderer", new HashSet<string> { "material", "materials" } }, // Accessing .material in edit mode creates instance
+            { "UnityEngine.MeshRenderer", new HashSet<string> { "material", "materials" } },
+            { "UnityEngine.SkinnedMeshRenderer", new HashSet<string> { "material", "materials" } }
+        };
+
         // Components to exclude by default (too verbose, rarely useful for AI, or cause runtime warnings)
         private static readonly HashSet<string> DefaultExcludeComponents = new HashSet<string>
         {
@@ -232,6 +243,10 @@ namespace NeuroEngine.Services
                     if (snapshot.Fields.Count >= MaxFieldsPerComponent) break;
                     if (!prop.CanRead) continue;
                     if (prop.GetIndexParameters().Length > 0) continue; // Skip indexed properties
+
+                    // Skip properties that cause instantiation/warnings in edit mode
+                    if (SkipProperties.TryGetValue(type.FullName, out var skipProps) && skipProps.Contains(prop.Name))
+                        continue;
 
                     // Only capture simple value types and strings from properties
                     var propType = prop.PropertyType;
