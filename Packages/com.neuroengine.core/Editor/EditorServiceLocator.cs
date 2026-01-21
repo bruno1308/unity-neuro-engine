@@ -172,6 +172,13 @@ namespace NeuroEngine.Editor
             if (type == typeof(ITaskManager))
                 return new TaskManagerService() as T;
 
+            // Layer 5: Evaluation
+            if (type == typeof(ISyntacticGrader))
+                return new SyntacticGraderService() as T;
+
+            if (type == typeof(IStateGrader))
+                return new StateGraderService() as T;
+
             // For concrete types, try parameterless constructor
             if (!type.IsInterface && !type.IsAbstract)
             {

@@ -29,6 +29,10 @@ namespace NeuroEngine.Core
             builder.Register<TranscriptWriterService>(Lifetime.Singleton).As<ITranscriptWriter>();
             builder.Register<TaskManagerService>(Lifetime.Singleton).As<ITaskManager>();
 
+            // Layer 5: Evaluation (Judgment)
+            builder.Register<SyntacticGraderService>(Lifetime.Singleton).As<ISyntacticGrader>();
+            builder.Register<StateGraderService>(Lifetime.Singleton).As<IStateGrader>();
+
             // Layer 7: Generative Assets
             // NOTE: Meshy and ElevenLabs HTTP calls are handled by Claude skills/agents,
             // not Unity services. This enables parallelization across multiple agents.
@@ -36,7 +40,7 @@ namespace NeuroEngine.Core
 
             if (_logRegistrations)
             {
-                Debug.Log("[NeuroEngine] Core services registered (Layers 1, 2, 3, 4)");
+                Debug.Log("[NeuroEngine] Core services registered (Layers 1, 2, 3, 4, 5)");
             }
         }
     }
