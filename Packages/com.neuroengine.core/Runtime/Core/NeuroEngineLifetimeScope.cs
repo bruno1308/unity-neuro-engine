@@ -24,8 +24,10 @@ namespace NeuroEngine.Core
             // Layer 3: Interaction (Hands)
             builder.Register<InputSimulationService>(Lifetime.Singleton).As<IInputSimulation>();
 
-            // Layer 4: Persistence
+            // Layer 4: Persistence (Memory)
             builder.Register<HooksWriterService>(Lifetime.Singleton).As<IHooksWriter>();
+            builder.Register<TranscriptWriterService>(Lifetime.Singleton).As<ITranscriptWriter>();
+            builder.Register<TaskManagerService>(Lifetime.Singleton).As<ITaskManager>();
 
             // Layer 7: Generative Assets
             // NOTE: Meshy and ElevenLabs HTTP calls are handled by Claude skills/agents,

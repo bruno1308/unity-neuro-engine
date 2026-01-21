@@ -166,6 +166,12 @@ namespace NeuroEngine.Editor
             if (type == typeof(IInputSimulation))
                 return new InputSimulationService() as T;
 
+            if (type == typeof(ITranscriptWriter))
+                return new TranscriptWriterService() as T;
+
+            if (type == typeof(ITaskManager))
+                return new TaskManagerService() as T;
+
             // For concrete types, try parameterless constructor
             if (!type.IsInterface && !type.IsAbstract)
             {
