@@ -32,6 +32,7 @@ namespace NeuroEngine.Core
             // Layer 5: Evaluation (Judgment)
             builder.Register<SyntacticGraderService>(Lifetime.Singleton).As<ISyntacticGrader>();
             builder.Register<StateGraderService>(Lifetime.Singleton).As<IStateGrader>();
+            builder.Register<PolishGraderService>(Lifetime.Singleton).As<IPolishGrader>();
 
             // Layer 7: Generative Assets
             // NOTE: Meshy and ElevenLabs HTTP calls are handled by Claude skills/agents,

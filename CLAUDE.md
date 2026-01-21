@@ -7,8 +7,9 @@ See `Docs/Architecture.md` for the 7-layer architecture we are trying to achieve
 ## Quick Start
 
 1. **Read** `.claude/ARCHITECTURE.md` for skills & agents overview
-2. **Read** `Docs/ENGINE_PROBLEMS.md` for known issues to avoid
-3. **Run** validation skill before any development work
+2. **Read** `Docs/WORKFLOW.md` for iteration workflow and blocker handling
+3. **Read** `Docs/ENGINE_PROBLEMS.md` for known issues to avoid
+4. **Run** validation skill before any development work
 
 ## Autonomy Directive
 
@@ -45,6 +46,7 @@ Technical debt compounds. Fix it immediately.
 | `.claude/agents/` | Autonomous workers (spawn via Task tool) |
 | `hooks/` | Persistent memory across sessions |
 | `Docs/` | Architecture and setup documentation |
+| `Assets/Iteration{N}/` | Game iterations (each with GDD.md) |
 
 ## External Services
 

@@ -25,6 +25,7 @@ This skill covers Tier 1-2 (automated, fast).
 ### Known Problems (from ENGINE_PROBLEMS.md)
 - **Problem #1**: Always validate before asking user
 - **Problem #2**: Package name mismatches only visible in Unity console
+- **Problem #8**: Input System mismatch - code generated with wrong API
 
 ## Procedure
 
@@ -49,6 +50,11 @@ grep -E "(vcontainer|unity-mcp)" Packages/manifest.json
 
 # 5. MCP connection (if server should be running)
 curl -s http://localhost:8080/health
+
+# 6. Input System configuration (via MCP)
+# Call check_input_system(action='get_config') to determine which Input API to use
+# Returns: Legacy, InputSystem, or Both
+# CRITICAL: Use the correct API or code will fail at runtime!
 ```
 
 ### Validation Results
@@ -65,7 +71,8 @@ Write to: `hooks/validation/{timestamp}-preflight.json`
     "structure": {"hooks": true, "claude": true, "env": true},
     "apiKeys": {"meshy": true, "elevenlabs": true, "gemini": true},
     "packages": {"vcontainer": true, "unityMcp": true},
-    "mcp": {"reachable": true|false}
+    "mcp": {"reachable": true|false},
+    "inputSystem": {"mode": "Legacy|InputSystem|Both", "api": "recommended API string"}
   },
   "errors": []
 }

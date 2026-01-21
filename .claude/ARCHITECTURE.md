@@ -12,6 +12,7 @@ The Neuro-Engine uses two types of specialized capabilities:
 ```
 .claude/
 ├── ARCHITECTURE.md      # This file
+├── ORCHESTRATION_RULES.md # Mayor discipline and verification rules
 ├── settings.json        # Project settings
 ├── mcp.json            # MCP server config
 ├── skills/             # Skill definitions
