@@ -1,0 +1,22 @@
+{
+  "id": "convoy-001",
+  "name": "Service Interfaces",
+  "iteration": "Iteration1",
+  "description": "Define all service interfaces (contracts) for the Target Clicker game",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "tasks": ["task-001", "task-002", "task-003"],
+  "dependencies": [],
+  "priority": 1,
+  "assignedAgent": "script-polecat",
+  "deliverables": [
+    "Assets/Iteration1/Scripts/Services/IScoreService.cs",
+    "Assets/Iteration1/Scripts/Services/ITargetSpawnerService.cs",
+    "Assets/Iteration1/Scripts/Services/IGameStateService.cs"
+  ],
+  "completionCriteria": [
+    "All three interface files compile without errors",
+    "Interfaces define required method signatures",
+    "UniRx observables used for reactive state"
+  ]
+}

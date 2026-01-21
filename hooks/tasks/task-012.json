@@ -1,0 +1,31 @@
+{
+  "id": "task-012",
+  "convoyId": "convoy-005",
+  "iteration": "Iteration1",
+  "name": "Create Iteration1LifetimeScope",
+  "description": "Create VContainer LifetimeScope that registers all services and entry points",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "assignedAgent": "script-polecat",
+  "priority": 3,
+  "dependencies": ["task-004", "task-005", "task-006"],
+  "deliverable": "Assets/Iteration1/Scripts/Iteration1LifetimeScope.cs",
+  "specification": {
+    "type": "LifetimeScope",
+    "namespace": "Iteration1",
+    "registrations": [
+      {"interface": "IScoreService", "implementation": "ScoreService", "lifetime": "Singleton"},
+      {"interface": "ITargetSpawnerService", "implementation": "TargetSpawnerService", "lifetime": "Singleton"},
+      {"interface": "IGameStateService", "implementation": "GameStateService", "lifetime": "Singleton"}
+    ],
+    "entryPoints": ["TargetSpawnerService"]
+  },
+  "successCriteria": [
+    "File exists at specified path",
+    "Compiles without errors",
+    "Inherits from LifetimeScope",
+    "All services registered with interfaces",
+    "Entry point spawns initial target on game start"
+  ],
+  "estimatedMinutes": 10
+}

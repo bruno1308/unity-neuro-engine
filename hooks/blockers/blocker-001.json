@@ -1,0 +1,21 @@
+{
+  "id": "blocker-001",
+  "iteration": "Iteration1",
+  "description": "Scene creation popup appeared twice - Access denied on file move",
+  "layers": ["L6"],
+  "status": "resolved",
+  "created": "2026-01-21T19:41:00Z",
+  "resolvedAt": "2026-01-21T19:45:00Z",
+  "rootCause": "Scene Polecat agent was interrupted by user, but MCP command had already been sent. Agent was re-spawned or command was retried, causing duplicate scene creation attempt. Unity cannot overwrite an existing scene file via temp file move.",
+  "resolution": "Dismissed popup (Cancel). Scene file was successfully created on first attempt.",
+  "prevention": "Layer 6 orchestration needs: 1) Track in-flight MCP commands 2) Check if asset exists before creating 3) Use idempotent operations where possible",
+  "layerFaultAttribution": {
+    "L1": "No",
+    "L2": "No",
+    "L3": "No - MCP worked correctly",
+    "L4": "No",
+    "L5": "No",
+    "L6": "Yes - Agent interruption handling missing, no idempotency check",
+    "L7": "No"
+  }
+}

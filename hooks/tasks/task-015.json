@@ -1,0 +1,35 @@
+{
+  "id": "task-015",
+  "convoyId": "convoy-007",
+  "iteration": "Iteration1",
+  "name": "Wire up complete scene",
+  "description": "Final scene wiring - add all components, assign references, test play",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "assignedAgent": "scene-polecat",
+  "priority": 5,
+  "dependencies": ["task-013", "task-014", "task-007", "task-008", "task-011", "task-012"],
+  "deliverable": "Assets/Iteration1/Scenes/Iteration1Scene.unity",
+  "specification": {
+    "type": "scene-wiring",
+    "actions": [
+      "Add Iteration1LifetimeScope to GameManager",
+      "Add TargetClicker to GameManager",
+      "Configure UIDocument with GameHUD.uxml",
+      "Add GameHUDController to HUD object",
+      "Set prefab reference in TargetSpawnerService",
+      "Verify VContainer injection works"
+    ]
+  },
+  "successCriteria": [
+    "Scene loads without errors",
+    "Score displays 0 / 10 on start",
+    "Target spawns at game start",
+    "Clicking target increments score",
+    "New target spawns after click",
+    "You Win! shows at score 10",
+    "No console errors or warnings",
+    "Zero missing references"
+  ],
+  "estimatedMinutes": 20
+}

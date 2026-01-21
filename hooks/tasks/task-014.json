@@ -1,0 +1,33 @@
+{
+  "id": "task-014",
+  "convoyId": "convoy-006",
+  "iteration": "Iteration1",
+  "name": "Create Target prefab",
+  "description": "Create the Target prefab - a red cube with Target component and collider",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "assignedAgent": "scene-polecat",
+  "priority": 4,
+  "dependencies": ["task-009"],
+  "deliverable": "Assets/Iteration1/Prefabs/Target.prefab",
+  "specification": {
+    "type": "prefab",
+    "primitiveType": "Cube",
+    "scale": [1, 1, 1],
+    "components": [
+      {"type": "Target"},
+      {"type": "BoxCollider"}
+    ],
+    "material": {
+      "color": "red"
+    }
+  },
+  "successCriteria": [
+    "Prefab file exists at specified path",
+    "Is a cube primitive",
+    "Has Target component attached",
+    "Has BoxCollider for raycast detection",
+    "Material is red colored"
+  ],
+  "estimatedMinutes": 10
+}

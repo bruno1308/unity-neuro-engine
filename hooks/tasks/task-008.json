@@ -1,0 +1,27 @@
+{
+  "id": "task-008",
+  "convoyId": "convoy-003",
+  "iteration": "Iteration1",
+  "name": "Create GameHUD.uss",
+  "description": "Create UI Toolkit USS stylesheet for basic HUD styling",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "assignedAgent": "script-polecat",
+  "priority": 1,
+  "dependencies": [],
+  "deliverable": "Assets/Iteration1/UI/GameHUD.uss",
+  "specification": {
+    "type": "uss",
+    "styles": [
+      "score-label: large text, top-left positioning",
+      "win-message: centered, large text, green color"
+    ]
+  },
+  "successCriteria": [
+    "File exists at specified path",
+    "Valid USS syntax",
+    "Score label is readable",
+    "Win message is prominently styled"
+  ],
+  "estimatedMinutes": 5
+}

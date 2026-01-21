@@ -1,0 +1,22 @@
+{
+  "id": "convoy-006",
+  "name": "Unity Assets",
+  "iteration": "Iteration1",
+  "description": "Create the main scene and target prefab",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "tasks": ["task-013", "task-014"],
+  "dependencies": ["convoy-004", "convoy-005"],
+  "priority": 4,
+  "assignedAgent": "scene-polecat",
+  "deliverables": [
+    "Assets/Iteration1/Scenes/Iteration1Scene.unity",
+    "Assets/Iteration1/Prefabs/Target.prefab"
+  ],
+  "completionCriteria": [
+    "Scene has Main Camera looking at play area",
+    "Scene has Directional Light",
+    "Target prefab is red cube with Target component",
+    "Target prefab has collider for raycasting"
+  ]
+}

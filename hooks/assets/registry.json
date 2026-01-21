@@ -1,0 +1,37 @@
+{
+  "assets": [
+    {
+      "id": "asset-001",
+      "type": "model",
+      "source": "meshy",
+      "name": "ShootingTarget",
+      "prompt": "simple carnival shooting gallery target, circular bullseye with red and white concentric rings, wooden stand, low poly game asset, isometric view, single object on dark background",
+      "path": "Assets/Iteration1/Models/ShootingTarget.fbx",
+      "guid": "343086452df528e4a85ea0b577f01d3d",
+      "textures": {
+        "baseColor": {
+          "path": "Assets/Iteration1/Models/Textures/ShootingTarget_BaseColor.png",
+          "guid": "cb0f21ab27045b14cac251bdbbf8a40a"
+        },
+        "metallic": {
+          "path": "Assets/Iteration1/Models/Textures/ShootingTarget_Metallic.png",
+          "guid": "1f97899cb091b404185029aa2056d581"
+        },
+        "roughness": {
+          "path": "Assets/Iteration1/Models/Textures/ShootingTarget_Roughness.png",
+          "guid": "6ca7325401be4bd4ab67f3f7c38f77c2"
+        },
+        "normal": {
+          "path": "Assets/Iteration1/Models/Textures/ShootingTarget_Normal.png",
+          "guid": "b416a0bd284b96742a1e254e09e475d9"
+        }
+      },
+      "generatedAt": "2026-01-21T20:14:00Z",
+      "textToImageJobId": "019be1f5-96c9-77f3-9b3c-4ec254df14a5",
+      "imageTo3dJobId": "019be1f8-0786-73b4-8e7f-46aacda1a5cd",
+      "cost_credits_estimate": 14,
+      "iteration": "Iteration1",
+      "status": "imported"
+    }
+  ]
+}

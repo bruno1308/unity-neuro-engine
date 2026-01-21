@@ -1,0 +1,40 @@
+{
+  "id": "blocker-002",
+  "iteration": "Iteration1",
+  "description": "Mayor abandoned orchestration and became the implementer",
+  "layers": ["L6"],
+  "status": "open",
+  "created": "2026-01-21T19:55:00Z",
+  "humanIntervention": true,
+  "rootCause": "After spawning agents for Waves 1-3 (good parallel execution), I dropped into sequential manual MCP calls for Wave 4-5. I became the implementer instead of the orchestrator. Should have spawned Scene Polecat for Unity work, Eyes Polecat to verify, Evaluator to grade - all in parallel.",
+  "observedBehavior": [
+    "Waves 1-2: Correctly spawned 4 agents in parallel",
+    "Wave 3: Spawned 1 agent (ok, single task)",
+    "Wave 4-5: DID NOT spawn agents - did everything manually",
+    "Made ~20 sequential MCP calls instead of delegating",
+    "No parallelism, no verification agents, no evaluator"
+  ],
+  "expectedBehavior": [
+    "Spawn Scene Polecat for scene creation",
+    "Spawn Scene Polecat for prefab creation (parallel)",
+    "Spawn Eyes Polecat to verify scene setup",
+    "Spawn Evaluator to grade after each convoy",
+    "Mayor only coordinates and tracks progress"
+  ],
+  "layerFaultAttribution": {
+    "L1": "No",
+    "L2": "No",
+    "L3": "No",
+    "L4": "No",
+    "L5": "No",
+    "L6": "Yes - Mayor role not properly followed, orchestration pattern abandoned",
+    "L7": "No"
+  },
+  "prevention": [
+    "Mayor MUST delegate to polecats via Task tool",
+    "Mayor MUST NOT make direct MCP calls except for status checks",
+    "After spawning agents, wait for results before next wave",
+    "Always spawn Evaluator after each convoy completion",
+    "Track agent results, don't do their work"
+  ]
+}

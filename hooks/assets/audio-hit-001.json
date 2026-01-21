@@ -1,0 +1,17 @@
+{
+  "id": "audio-hit-001",
+  "type": "audio",
+  "subtype": "sfx",
+  "name": "hit",
+  "prompt": "Short punchy pop sound, arcade game hit, satisfying click ping when clicking a target, bright and crisp",
+  "path": "Assets/Iteration1/Audio/hit.mp3",
+  "duration": 0.5,
+  "format": "mp3",
+  "sampleRate": 44100,
+  "bitrate": "128 kbps",
+  "channels": "Stereo",
+  "createdAt": "2026-01-21T21:50:00Z",
+  "status": "imported",
+  "iteration": 1,
+  "usage": "Target click sound effect"
+}

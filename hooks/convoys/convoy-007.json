@@ -1,0 +1,22 @@
+{
+  "id": "convoy-007",
+  "name": "Scene Wiring",
+  "iteration": "Iteration1",
+  "description": "Wire up scene with lifetime scope, UI document, and initial state",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "tasks": ["task-015"],
+  "dependencies": ["convoy-006", "convoy-003"],
+  "priority": 5,
+  "assignedAgent": "scene-polecat",
+  "deliverables": [
+    "Assets/Iteration1/Scenes/Iteration1Scene.unity (updated)"
+  ],
+  "completionCriteria": [
+    "Iteration1LifetimeScope component in scene",
+    "UIDocument with GameHUD.uxml assigned",
+    "TargetClicker component on camera or manager object",
+    "GameHUDController component wired to UIDocument",
+    "Scene plays without errors"
+  ]
+}

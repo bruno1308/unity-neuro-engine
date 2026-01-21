@@ -1,0 +1,22 @@
+{
+  "id": "convoy-002",
+  "name": "Service Implementations",
+  "iteration": "Iteration1",
+  "description": "Implement all services with VContainer support",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "tasks": ["task-004", "task-005", "task-006"],
+  "dependencies": ["convoy-001"],
+  "priority": 2,
+  "assignedAgent": "script-polecat",
+  "deliverables": [
+    "Assets/Iteration1/Scripts/Services/ScoreService.cs",
+    "Assets/Iteration1/Scripts/Services/TargetSpawnerService.cs",
+    "Assets/Iteration1/Scripts/Services/GameStateService.cs"
+  ],
+  "completionCriteria": [
+    "All service implementations compile",
+    "Services implement their respective interfaces",
+    "No Inspector dependencies - pure DI"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "convoy-004",
+  "name": "MonoBehaviour Components",
+  "iteration": "Iteration1",
+  "description": "Create gameplay MonoBehaviour components that wire to services via DI",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "tasks": ["task-009", "task-010", "task-011"],
+  "dependencies": ["convoy-001"],
+  "priority": 2,
+  "assignedAgent": "script-polecat",
+  "deliverables": [
+    "Assets/Iteration1/Scripts/Components/Target.cs",
+    "Assets/Iteration1/Scripts/Components/TargetClicker.cs",
+    "Assets/Iteration1/Scripts/Components/GameHUDController.cs"
+  ],
+  "completionCriteria": [
+    "Target.cs handles click events and notifies services",
+    "TargetClicker.cs performs raycasting on mouse click",
+    "GameHUDController.cs binds UI elements to service observables",
+    "All use [Inject] for service dependencies"
+  ]
+}

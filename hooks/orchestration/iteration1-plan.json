@@ -1,0 +1,79 @@
+{
+  "id": "iteration1-plan",
+  "iteration": "Iteration1",
+  "gameName": "TargetClicker",
+  "version": "1.0.0",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "status": "planned",
+  "description": "Target Clicker - Click 10 targets to win. First validation of Neuro-Engine Layers 1-5.",
+  "gddPath": "Assets/Iteration1/GDD.md",
+  "convoys": [
+    {
+      "id": "convoy-001",
+      "name": "Service Interfaces",
+      "description": "Define all service interfaces (contracts)",
+      "tasks": ["task-001", "task-002", "task-003"],
+      "dependencies": [],
+      "priority": 1
+    },
+    {
+      "id": "convoy-002",
+      "name": "Service Implementations",
+      "description": "Implement all services with VContainer support",
+      "tasks": ["task-004", "task-005", "task-006"],
+      "dependencies": ["convoy-001"],
+      "priority": 2
+    },
+    {
+      "id": "convoy-003",
+      "name": "UI Foundation",
+      "description": "Create UI Toolkit files for the HUD",
+      "tasks": ["task-007", "task-008"],
+      "dependencies": [],
+      "priority": 1
+    },
+    {
+      "id": "convoy-004",
+      "name": "MonoBehaviour Components",
+      "description": "Create gameplay components that wire to services",
+      "tasks": ["task-009", "task-010", "task-011"],
+      "dependencies": ["convoy-001"],
+      "priority": 2
+    },
+    {
+      "id": "convoy-005",
+      "name": "DI Container Setup",
+      "description": "Create VContainer lifetime scope to wire everything",
+      "tasks": ["task-012"],
+      "dependencies": ["convoy-002"],
+      "priority": 3
+    },
+    {
+      "id": "convoy-006",
+      "name": "Unity Assets",
+      "description": "Create scene and prefab assets",
+      "tasks": ["task-013", "task-014"],
+      "dependencies": ["convoy-004", "convoy-005"],
+      "priority": 4
+    },
+    {
+      "id": "convoy-007",
+      "name": "Scene Wiring",
+      "description": "Wire up scene with all components and references",
+      "tasks": ["task-015"],
+      "dependencies": ["convoy-006", "convoy-003"],
+      "priority": 5
+    }
+  ],
+  "totalTasks": 15,
+  "estimatedEffort": "2-3 hours autonomous work",
+  "successCriteria": [
+    "All services registered via VContainer",
+    "UI displays Score: 0 / 10 on start",
+    "Clicking target increments score",
+    "New target spawns after click",
+    "You Win! displayed at score 10",
+    "Zero compilation errors",
+    "Zero missing references"
+  ]
+}

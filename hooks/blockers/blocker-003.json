@@ -1,0 +1,38 @@
+{
+  "id": "blocker-003",
+  "iteration": "Iteration1",
+  "description": "AI cannot playtest games - no input simulation in Layer 3",
+  "layers": ["L3"],
+  "status": "open",
+  "created": "2026-01-21T20:15:00Z",
+  "humanIntervention": false,
+  "rootCause": "The Unity-MCP bridge has no tool to simulate physics-based mouse input. OnMouseDown() requires actual Unity Input events that trigger Physics.Raycast. Current MCP tools only support UI EventSystem raycasting, not world-space physics raycasting.",
+  "observedBehavior": [
+    "Playtest Polecat verified initial state (score 0/10, target spawned)",
+    "Could not simulate clicking the target",
+    "OnMouseDown never triggered",
+    "Game loop untestable by AI"
+  ],
+  "expectedBehavior": [
+    "AI should be able to simulate mouse clicks at world positions",
+    "Physics.Raycast should detect the simulated input",
+    "Target.OnMouseDown() should trigger",
+    "Full game loop playable by AI"
+  ],
+  "layerFaultAttribution": {
+    "L1": "No",
+    "L2": "No",
+    "L3": "Yes - Input simulation missing from MCP tools",
+    "L4": "No",
+    "L5": "No",
+    "L6": "No",
+    "L7": "No"
+  },
+  "proposedFixes": [
+    "Option A: Add IPlaytestService to Layer 3 that can invoke click handlers programmatically",
+    "Option B: Add public Click() method to all clickable components alongside OnMouseDown",
+    "Option C: Create custom MCP tool that simulates Input.mousePosition + Physics.Raycast",
+    "Option D: Use Unity Test Framework's InputTestFixture for PlayMode tests"
+  ],
+  "prevention": "All interactive components should implement IClickable interface with programmatic Click() method for AI testing"
+}

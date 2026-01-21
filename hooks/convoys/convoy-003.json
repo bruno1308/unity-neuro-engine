@@ -1,0 +1,21 @@
+{
+  "id": "convoy-003",
+  "name": "UI Foundation",
+  "iteration": "Iteration1",
+  "description": "Create UI Toolkit files for the game HUD",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "tasks": ["task-007", "task-008"],
+  "dependencies": [],
+  "priority": 1,
+  "assignedAgent": "script-polecat",
+  "deliverables": [
+    "Assets/Iteration1/UI/GameHUD.uxml",
+    "Assets/Iteration1/UI/GameHUD.uss"
+  ],
+  "completionCriteria": [
+    "UXML defines score label and win message elements",
+    "USS provides basic styling",
+    "Elements have proper name attributes for binding"
+  ]
+}

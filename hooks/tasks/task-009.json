@@ -1,0 +1,29 @@
+{
+  "id": "task-009",
+  "convoyId": "convoy-004",
+  "iteration": "Iteration1",
+  "name": "Create Target component",
+  "description": "Create Target MonoBehaviour that handles being clicked and notifies services",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "assignedAgent": "script-polecat",
+  "priority": 2,
+  "dependencies": ["task-001", "task-002"],
+  "deliverable": "Assets/Iteration1/Scripts/Components/Target.cs",
+  "specification": {
+    "type": "MonoBehaviour",
+    "namespace": "Iteration1.Components",
+    "injectedDependencies": ["IScoreService", "ITargetSpawnerService"],
+    "behavior": [
+      "Has public OnClicked method called by TargetClicker",
+      "When clicked: AddScore(1), then DestroyCurrentTarget(), then SpawnTarget()"
+    ]
+  },
+  "successCriteria": [
+    "File exists at specified path",
+    "Compiles without errors",
+    "Uses [Inject] for service dependencies",
+    "OnClicked method triggers score and respawn"
+  ],
+  "estimatedMinutes": 10
+}

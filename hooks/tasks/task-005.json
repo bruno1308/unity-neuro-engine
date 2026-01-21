@@ -1,0 +1,34 @@
+{
+  "id": "task-005",
+  "convoyId": "convoy-002",
+  "iteration": "Iteration1",
+  "name": "Implement TargetSpawnerService",
+  "description": "Implement target spawner that spawns red cubes at random positions within play area",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "assignedAgent": "script-polecat",
+  "priority": 2,
+  "dependencies": ["task-002", "task-001"],
+  "deliverable": "Assets/Iteration1/Scripts/Services/TargetSpawnerService.cs",
+  "specification": {
+    "type": "class",
+    "namespace": "Iteration1.Services",
+    "implements": "ITargetSpawnerService",
+    "injectedDependencies": ["IScoreService"],
+    "behavior": [
+      "Spawns targets at random positions in 10x10 area at z=5",
+      "X range: -5 to 5, Y range: 0 to 5",
+      "Destroys current target before spawning new one",
+      "Does not spawn if game is won",
+      "Requires target prefab reference (addressable or Resources)"
+    ]
+  },
+  "successCriteria": [
+    "File exists at specified path",
+    "Compiles without errors",
+    "Implements ITargetSpawnerService",
+    "Uses IScoreService to check win state",
+    "Random positions within bounds"
+  ],
+  "estimatedMinutes": 15
+}

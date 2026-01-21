@@ -1,0 +1,153 @@
+{
+  "timestamp": "2026-01-21T19:05:00Z",
+  "scene": "Iteration1Scene",
+  "hierarchy": {
+    "totalRoots": 5,
+    "gameObjects": [
+      {
+        "name": "Main Camera",
+        "instanceID": -15820,
+        "active": true,
+        "tag": "MainCamera",
+        "components": ["Transform", "Camera", "AudioListener"],
+        "status": "pass"
+      },
+      {
+        "name": "Directional Light",
+        "instanceID": -15830,
+        "active": true,
+        "tag": "Untagged",
+        "components": ["Transform", "Light"],
+        "status": "pass"
+      },
+      {
+        "name": "GameManager",
+        "instanceID": -15842,
+        "active": true,
+        "tag": "Untagged",
+        "components": ["Transform", "TargetClicker", "Iteration1LifetimeScope"],
+        "componentDetails": {
+          "Iteration1LifetimeScope": {
+            "_targetPrefab": "Assets/Iteration1/Prefabs/Target.prefab",
+            "_spawnParent": {
+              "name": "SpawnParent",
+              "instanceID": -15856
+            },
+            "autoRun": true
+          }
+        },
+        "status": "pass"
+      },
+      {
+        "name": "SpawnParent",
+        "instanceID": -15854,
+        "active": true,
+        "tag": "Untagged",
+        "components": ["Transform"],
+        "status": "pass"
+      },
+      {
+        "name": "UI",
+        "instanceID": -15864,
+        "active": true,
+        "tag": "Untagged",
+        "components": ["Transform", "UIDocument", "GameHUDController"],
+        "componentDetails": {
+          "UIDocument": {
+            "visualTreeAsset": "Assets/Iteration1/UI/GameHUD.uxml",
+            "panelSettings": null
+          }
+        },
+        "status": "pass",
+        "notes": "UIDocument.panelSettings is null - may need assignment"
+      }
+    ]
+  },
+  "prefab": {
+    "path": "Assets/Iteration1/Prefabs/Target.prefab",
+    "exists": true,
+    "guid": "6c5e52575f7c5f041b8912a8fb4e0cb1",
+    "components": ["Transform", "MeshFilter", "BoxCollider", "MeshRenderer", "Target"],
+    "status": "pass"
+  },
+  "missingReferences": [
+    {
+      "object": "UI/UIDocument",
+      "field": "panelSettings",
+      "value": null,
+      "severity": "warning",
+      "notes": "May cause runtime issues if not assigned"
+    }
+  ],
+  "consoleErrors": [
+    {
+      "message": "Parent directory must exist before creating asset at Assets/Iteration1/Materials/TargetMaterial.mat.",
+      "type": "error",
+      "notes": "Material directory missing"
+    },
+    {
+      "message": "SerializedObjectNotCreatableException: Object at index 0 is null",
+      "type": "error",
+      "count": 4,
+      "notes": "Serialization issue - possibly during asset import or component inspection"
+    },
+    {
+      "message": "NullReferenceException: Object reference not set to an instance of an object",
+      "type": "error",
+      "count": 1,
+      "notes": "Null reference during execution"
+    }
+  ],
+  "consoleWarnings": [
+    {
+      "message": "Search path 'Assets/Assets' is not a valid folder. Searching entire project.",
+      "type": "warning",
+      "count": 4,
+      "notes": "Invalid search path in MCP tool usage"
+    }
+  ],
+  "issues": [
+    {
+      "id": "ISSUE-001",
+      "severity": "warning",
+      "category": "missing_reference",
+      "description": "UIDocument.panelSettings is null",
+      "location": "UI GameObject",
+      "impact": "UI may not render correctly without PanelSettings"
+    },
+    {
+      "id": "ISSUE-002",
+      "severity": "error",
+      "category": "missing_directory",
+      "description": "Assets/Iteration1/Materials/ directory does not exist",
+      "location": "Asset structure",
+      "impact": "Cannot create TargetMaterial.mat"
+    },
+    {
+      "id": "ISSUE-003",
+      "severity": "error",
+      "category": "serialization",
+      "description": "SerializedObjectNotCreatableException occurring during operations",
+      "location": "Unity Editor",
+      "impact": "May indicate corrupted or missing references"
+    }
+  ],
+  "requiredObjectsPresent": {
+    "MainCamera": true,
+    "DirectionalLight": true,
+    "GameManager": true,
+    "SpawnParent": true,
+    "UI": true
+  },
+  "requiredComponentsPresent": {
+    "GameManager/Iteration1LifetimeScope": true,
+    "GameManager/TargetClicker": true,
+    "UI/UIDocument": true,
+    "UI/GameHUDController": true
+  },
+  "lifetimeScopeAssignments": {
+    "_targetPrefab": "assigned",
+    "_spawnParent": "assigned"
+  },
+  "status": "issues_found"
+}

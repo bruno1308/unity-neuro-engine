@@ -1,0 +1,20 @@
+{
+  "id": "convoy-005",
+  "name": "DI Container Setup",
+  "iteration": "Iteration1",
+  "description": "Create VContainer lifetime scope to wire all services and components",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "tasks": ["task-012"],
+  "dependencies": ["convoy-002"],
+  "priority": 3,
+  "assignedAgent": "script-polecat",
+  "deliverables": [
+    "Assets/Iteration1/Scripts/Iteration1LifetimeScope.cs"
+  ],
+  "completionCriteria": [
+    "All services registered as singletons",
+    "Entry point components registered",
+    "Lifetime scope inherits from LifetimeScope"
+  ]
+}

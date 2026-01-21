@@ -1,0 +1,29 @@
+.hud-root {
+    flex-grow: 1;
+    padding: 20px;
+    picking-mode: Ignore;
+}
+
+.score-text {
+    font-size: 32px;
+    color: white;
+    -unity-font-style: bold;
+    picking-mode: Ignore;
+}
+
+.win-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+.win-text {
+    font-size: 64px;
+    color: gold;
+    -unity-font-style: bold;
+}

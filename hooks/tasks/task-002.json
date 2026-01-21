@@ -1,0 +1,29 @@
+{
+  "id": "task-002",
+  "convoyId": "convoy-001",
+  "iteration": "Iteration1",
+  "name": "Create ITargetSpawnerService interface",
+  "description": "Define the target spawner service interface for spawning and destroying targets",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "assignedAgent": "script-polecat",
+  "priority": 1,
+  "dependencies": [],
+  "deliverable": "Assets/Iteration1/Scripts/Services/ITargetSpawnerService.cs",
+  "specification": {
+    "type": "interface",
+    "namespace": "Iteration1.Services",
+    "members": [
+      "IReadOnlyReactiveProperty<GameObject> CurrentTarget { get; }",
+      "void SpawnTarget();",
+      "void DestroyCurrentTarget();"
+    ]
+  },
+  "successCriteria": [
+    "File exists at specified path",
+    "Compiles without errors",
+    "Uses UniRx for reactive target reference",
+    "Interface is public"
+  ],
+  "estimatedMinutes": 5
+}

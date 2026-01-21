@@ -1,0 +1,29 @@
+{
+  "id": "task-007",
+  "convoyId": "convoy-003",
+  "iteration": "Iteration1",
+  "name": "Create GameHUD.uxml",
+  "description": "Create UI Toolkit UXML file for the game HUD with score display and win message",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "assignedAgent": "script-polecat",
+  "priority": 1,
+  "dependencies": [],
+  "deliverable": "Assets/Iteration1/UI/GameHUD.uxml",
+  "specification": {
+    "type": "uxml",
+    "elements": [
+      {"name": "score-label", "type": "Label", "text": "Score: 0 / 10"},
+      {"name": "win-message", "type": "VisualElement", "children": [
+        {"type": "Label", "text": "You Win!"}
+      ], "hidden": true}
+    ]
+  },
+  "successCriteria": [
+    "File exists at specified path",
+    "Valid UXML syntax",
+    "score-label element has name attribute",
+    "win-message element has name attribute and is initially hidden"
+  ],
+  "estimatedMinutes": 5
+}

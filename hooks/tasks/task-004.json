@@ -1,0 +1,32 @@
+{
+  "id": "task-004",
+  "convoyId": "convoy-002",
+  "iteration": "Iteration1",
+  "name": "Implement ScoreService",
+  "description": "Implement the score service with reactive score tracking and win detection at 10 points",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "assignedAgent": "script-polecat",
+  "priority": 2,
+  "dependencies": ["task-001"],
+  "deliverable": "Assets/Iteration1/Scripts/Services/ScoreService.cs",
+  "specification": {
+    "type": "class",
+    "namespace": "Iteration1.Services",
+    "implements": "IScoreService",
+    "behavior": [
+      "Score starts at 0",
+      "TargetScore is 10",
+      "AddScore increments score",
+      "HasWon becomes true when Score >= TargetScore"
+    ]
+  },
+  "successCriteria": [
+    "File exists at specified path",
+    "Compiles without errors",
+    "Implements IScoreService",
+    "Win detection works at score 10",
+    "No MonoBehaviour dependency - pure C# class"
+  ],
+  "estimatedMinutes": 10
+}

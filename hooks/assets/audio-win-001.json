@@ -1,0 +1,17 @@
+{
+  "id": "audio-win-001",
+  "type": "audio",
+  "subtype": "sfx",
+  "name": "win",
+  "prompt": "Celebratory victory fanfare, triumphant arcade game win sound, cheerful achievement jingle with sparkle",
+  "path": "Assets/Iteration1/Audio/win.mp3",
+  "duration": 2.5,
+  "format": "mp3",
+  "sampleRate": 44100,
+  "bitrate": "128 kbps",
+  "channels": "Stereo",
+  "createdAt": "2026-01-21T21:50:00Z",
+  "status": "imported",
+  "iteration": 1,
+  "usage": "Victory fanfare when player reaches 10 points"
+}

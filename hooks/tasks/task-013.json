@@ -1,0 +1,29 @@
+{
+  "id": "task-013",
+  "convoyId": "convoy-006",
+  "iteration": "Iteration1",
+  "name": "Create Iteration1Scene",
+  "description": "Create the main Unity scene with camera, lighting, and basic structure",
+  "status": "pending",
+  "createdAt": "2026-01-21T19:31:00Z",
+  "assignedAgent": "scene-polecat",
+  "priority": 4,
+  "dependencies": ["task-012"],
+  "deliverable": "Assets/Iteration1/Scenes/Iteration1Scene.unity",
+  "specification": {
+    "type": "scene",
+    "gameObjects": [
+      {"name": "Main Camera", "position": [0, 2.5, -5], "rotation": [15, 0, 0]},
+      {"name": "Directional Light", "type": "light"},
+      {"name": "GameManager", "components": ["Iteration1LifetimeScope", "TargetClicker"]},
+      {"name": "HUD", "components": ["UIDocument", "GameHUDController"]}
+    ]
+  },
+  "successCriteria": [
+    "Scene file exists at specified path",
+    "Camera positioned to view play area (z=5)",
+    "Directional light provides visibility",
+    "Empty GameManager object ready for components"
+  ],
+  "estimatedMinutes": 10
+}
