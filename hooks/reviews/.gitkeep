@@ -1,0 +1,2 @@
+# This directory stores layer review results
+# Reviews are checked by git hooks before commits/pushes to protected paths

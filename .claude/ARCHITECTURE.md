@@ -39,6 +39,7 @@ The Neuro-Engine uses two types of specialized capabilities:
 | `state-query` | Query game state via MCP | Debugging, verification |
 | `validation` | Run validation checks | Pre-flight checks |
 | `meshy-generation` | Generate 3D assets via Meshy.ai | Creating models, textures |
+| `review-layers` | Review engine layer changes | Before committing to neuroengine.core |
 
 ## Agents (Autonomous Workers)
 
@@ -52,6 +53,7 @@ The Neuro-Engine uses two types of specialized capabilities:
 | `mayor` | Orchestrate work | Complex multi-agent tasks |
 | `game-tester` | Find bugs, create issues | Automated E2E testing |
 | `game-fixer` | Fix bugs from issues | Bug resolution |
+| `code-reviewer-layers` | **Quality keeper** for engine layers | **REQUIRED** for all neuroengine.core changes |
 
 ### Tester/Fixer Workflow
 
