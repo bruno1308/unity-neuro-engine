@@ -51,26 +51,22 @@ namespace NeuroEngine.Services
 #if UNITY_EDITOR
             try
             {
-                // Check for compilation errors
+                // Check for compilation errors using EditorUtility flag
                 var hasErrors = UnityEditor.EditorUtility.scriptCompilationFailed;
 
                 if (hasErrors)
                 {
-                    // Get compiler messages
-                    var compilerMessages = UnityEditor.Compilation.CompilationPipeline.GetCompilationMessages(
-                        UnityEditor.Compilation.ReportType.Errors);
-
-                    foreach (var msg in compilerMessages)
+                    // EditorUtility.scriptCompilationFailed only tells us there ARE errors
+                    // To get details, we'd need to parse the console or use CompilationPipeline events
+                    // For now, we report the failure without detailed messages
+                    issues.Add(new GradingIssue
                     {
-                        issues.Add(new GradingIssue
-                        {
-                            Severity = IssueSeverity.Error,
-                            Code = "COMPILE_ERROR",
-                            Message = msg.message,
-                            FilePath = msg.file,
-                            Line = msg.line
-                        });
-                    }
+                        Severity = IssueSeverity.Error,
+                        Code = "COMPILE_ERROR",
+                        Message = "Script compilation failed. Check Unity console for details.",
+                        FilePath = null,
+                        Line = 0
+                    });
 
                     sw.Stop();
                     return new GraderResult
@@ -81,25 +77,31 @@ namespace NeuroEngine.Services
                         Score = 0f,
                         Weight = 1.0f,
                         DurationMs = sw.ElapsedMilliseconds,
-                        Summary = $"Compilation failed with {issues.Count} errors",
+                        Summary = "Compilation failed - check Unity console for details",
                         Issues = issues
                     };
                 }
 
                 sw.Stop();
-                return GraderResult.Pass(GRADER_ID_COMPILATION, EvaluationTier.Syntactic,
-                    "Compilation successful") with { DurationMs = sw.ElapsedMilliseconds };
+                var passResult = GraderResult.Pass(GRADER_ID_COMPILATION, EvaluationTier.Syntactic,
+                    "Compilation successful");
+                passResult.DurationMs = sw.ElapsedMilliseconds;
+                return passResult;
             }
             catch (Exception ex)
             {
                 sw.Stop();
-                return GraderResult.Error(GRADER_ID_COMPILATION, EvaluationTier.Syntactic,
-                    $"Failed to check compilation: {ex.Message}") with { DurationMs = sw.ElapsedMilliseconds };
+                var errorResult = GraderResult.Error(GRADER_ID_COMPILATION, EvaluationTier.Syntactic,
+                    $"Failed to check compilation: {ex.Message}");
+                errorResult.DurationMs = sw.ElapsedMilliseconds;
+                return errorResult;
             }
 #else
             sw.Stop();
-            return GraderResult.Skipped(GRADER_ID_COMPILATION, EvaluationTier.Syntactic,
-                "Compilation check only available in editor") with { DurationMs = sw.ElapsedMilliseconds };
+            var skippedResult = GraderResult.Skipped(GRADER_ID_COMPILATION, EvaluationTier.Syntactic,
+                "Compilation check only available in editor");
+            skippedResult.DurationMs = sw.ElapsedMilliseconds;
+            return skippedResult;
 #endif
         }
 
@@ -109,34 +111,18 @@ namespace NeuroEngine.Services
 
             try
             {
-                var snapshot = _sceneCapture.CaptureScene(scenePath);
+                // CaptureScene() takes no params or SceneCaptureOptions, not a string path
+                var snapshot = _sceneCapture.CaptureScene();
                 var issues = new List<GradingIssue>();
+                int totalObjectCount = 0;
 
-                // Check all GameObjects for null serialized fields
-                foreach (var go in snapshot.GameObjects)
+                // Recursively check all GameObjects for null serialized fields
+                // RootObjects is hierarchical, need to traverse
+                if (snapshot.RootObjects != null)
                 {
-                    foreach (var component in go.Components)
+                    foreach (var rootGo in snapshot.RootObjects)
                     {
-                        if (component.SerializedFields == null) continue;
-
-                        foreach (var field in component.SerializedFields)
-                        {
-                            // Check if field is a reference type that's null
-                            if (field.Value != null && field.Value is string strValue)
-                            {
-                                if (strValue == "null" || strValue == "None" || strValue == "Missing")
-                                {
-                                    issues.Add(new GradingIssue
-                                    {
-                                        Severity = IssueSeverity.Warning,
-                                        Code = "NULL_REF",
-                                        Message = $"Null reference in {component.Type}.{field.Key}",
-                                        ObjectPath = go.Path,
-                                        SuggestedFix = $"Assign a value to {field.Key}"
-                                    });
-                                }
-                            }
-                        }
+                        CheckGameObjectForNullRefs(rootGo, "", issues, ref totalObjectCount);
                     }
                 }
 
@@ -144,13 +130,15 @@ namespace NeuroEngine.Services
 
                 if (issues.Count == 0)
                 {
-                    return GraderResult.Pass(GRADER_ID_NULL_REFS, EvaluationTier.Syntactic,
-                        "No null references found") with { DurationMs = sw.ElapsedMilliseconds };
+                    var passResult = GraderResult.Pass(GRADER_ID_NULL_REFS, EvaluationTier.Syntactic,
+                        "No null references found");
+                    passResult.DurationMs = sw.ElapsedMilliseconds;
+                    return passResult;
                 }
 
                 var errorCount = issues.Count(i => i.Severity == IssueSeverity.Error);
                 var status = errorCount > 0 ? GradeStatus.Fail : GradeStatus.Warning;
-                var score = 1f - (issues.Count / (float)Math.Max(snapshot.GameObjects.Count * 5, 1));
+                var score = 1f - (issues.Count / (float)Math.Max(totalObjectCount * 5, 1));
 
                 return new GraderResult
                 {
@@ -167,8 +155,59 @@ namespace NeuroEngine.Services
             catch (Exception ex)
             {
                 sw.Stop();
-                return GraderResult.Error(GRADER_ID_NULL_REFS, EvaluationTier.Syntactic,
-                    $"Failed to detect null references: {ex.Message}") with { DurationMs = sw.ElapsedMilliseconds };
+                var errorResult = GraderResult.Error(GRADER_ID_NULL_REFS, EvaluationTier.Syntactic,
+                    $"Failed to detect null references: {ex.Message}");
+                errorResult.DurationMs = sw.ElapsedMilliseconds;
+                return errorResult;
+            }
+        }
+
+        /// <summary>
+        /// Recursively checks a GameObjectSnapshot and its children for null references.
+        /// Builds the path during traversal since GameObjectSnapshot doesn't have a Path property.
+        /// </summary>
+        private void CheckGameObjectForNullRefs(GameObjectSnapshot go, string parentPath, List<GradingIssue> issues, ref int objectCount)
+        {
+            objectCount++;
+            var currentPath = string.IsNullOrEmpty(parentPath) ? go.Name : $"{parentPath}/{go.Name}";
+
+            // ComponentData contains the full component snapshots with Fields
+            // Components is just string[] of component names
+            if (go.ComponentData != null)
+            {
+                foreach (var component in go.ComponentData)
+                {
+                    // Fields is Dictionary<string, object>, not SerializedFields
+                    if (component.Fields == null) continue;
+
+                    foreach (var field in component.Fields)
+                    {
+                        // Check if field is a reference type that's null
+                        if (field.Value != null && field.Value is string strValue)
+                        {
+                            if (strValue == "null" || strValue == "None" || strValue == "Missing")
+                            {
+                                issues.Add(new GradingIssue
+                                {
+                                    Severity = IssueSeverity.Warning,
+                                    Code = "NULL_REF",
+                                    Message = $"Null reference in {component.Type}.{field.Key}",
+                                    ObjectPath = currentPath,
+                                    SuggestedFix = $"Assign a value to {field.Key}"
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Recursively check children
+            if (go.Children != null)
+            {
+                foreach (var child in go.Children)
+                {
+                    CheckGameObjectForNullRefs(child, currentPath, issues, ref objectCount);
+                }
             }
         }
 
@@ -178,25 +217,27 @@ namespace NeuroEngine.Services
 
             try
             {
-                var report = _missingRefDetector.DetectInScene(scenePath);
+                // ScanScene() takes no params, not DetectInScene(scenePath)
+                var report = _missingRefDetector.ScanScene();
                 var issues = new List<GradingIssue>();
 
-                foreach (var missing in report.MissingReferences)
+                // References is List<MissingReference>, not MissingReferences
+                foreach (var missing in report.References)
                 {
+                    // MissingReference has ObjectPath, ComponentType, FieldName, ExpectedType, Severity
+                    // Not HierarchyPath or LastKnownGUID
                     issues.Add(new GradingIssue
                     {
-                        Severity = IssueSeverity.Error,
+                        Severity = missing.Severity == "error" ? IssueSeverity.Error : IssueSeverity.Warning,
                         Code = "MISSING_REF",
                         Message = $"Missing reference: {missing.FieldName} on {missing.ComponentType}",
-                        ObjectPath = missing.HierarchyPath,
-                        SuggestedFix = missing.LastKnownGUID != null
-                            ? $"Reassign asset with GUID: {missing.LastKnownGUID}"
-                            : "Locate and reassign the missing asset",
+                        ObjectPath = missing.ObjectPath,
+                        SuggestedFix = $"Assign a {missing.ExpectedType} to {missing.FieldName}",
                         Metadata = new Dictionary<string, object>
                         {
                             { "field_name", missing.FieldName },
                             { "component_type", missing.ComponentType },
-                            { "last_known_guid", missing.LastKnownGUID }
+                            { "expected_type", missing.ExpectedType }
                         }
                     });
                 }
@@ -205,16 +246,15 @@ namespace NeuroEngine.Services
 
                 if (issues.Count == 0)
                 {
-                    return GraderResult.Pass(GRADER_ID_MISSING_REFS, EvaluationTier.Syntactic,
-                        "No missing references found") with
+                    var passResult = GraderResult.Pass(GRADER_ID_MISSING_REFS, EvaluationTier.Syntactic,
+                        "No missing references found");
+                    passResult.DurationMs = sw.ElapsedMilliseconds;
+                    passResult.Metadata = new Dictionary<string, object>
                     {
-                        DurationMs = sw.ElapsedMilliseconds,
-                        Metadata = new Dictionary<string, object>
-                        {
-                            { "objects_scanned", report.ObjectsScanned },
-                            { "components_scanned", report.ComponentsScanned }
-                        }
+                        { "fields_scanned", report.TotalFieldsScanned },
+                        { "null_count", report.NullCount }
                     };
+                    return passResult;
                 }
 
                 return new GraderResult
@@ -229,16 +269,18 @@ namespace NeuroEngine.Services
                     Issues = issues,
                     Metadata = new Dictionary<string, object>
                     {
-                        { "objects_scanned", report.ObjectsScanned },
-                        { "components_scanned", report.ComponentsScanned }
+                        { "fields_scanned", report.TotalFieldsScanned },
+                        { "null_count", report.NullCount }
                     }
                 };
             }
             catch (Exception ex)
             {
                 sw.Stop();
-                return GraderResult.Error(GRADER_ID_MISSING_REFS, EvaluationTier.Syntactic,
-                    $"Failed to detect missing references: {ex.Message}") with { DurationMs = sw.ElapsedMilliseconds };
+                var errorResult = GraderResult.Error(GRADER_ID_MISSING_REFS, EvaluationTier.Syntactic,
+                    $"Failed to detect missing references: {ex.Message}");
+                errorResult.DurationMs = sw.ElapsedMilliseconds;
+                return errorResult;
             }
         }
 
@@ -256,17 +298,22 @@ namespace NeuroEngine.Services
             // Also run validation rules
             try
             {
-                var validationResult = _validationRules.ValidateScene(scenePath);
-                foreach (var violation in validationResult.Violations)
+                // ValidateScene() takes no params, not ValidateScene(scenePath)
+                var validationResult = _validationRules.ValidateScene();
+                // ValidationReport has Results (List<ValidationResult>), not Violations
+                foreach (var result in validationResult.Results)
                 {
-                    allIssues.Add(new GradingIssue
+                    if (!result.Passed)
                     {
-                        Severity = violation.Severity == "error" ? IssueSeverity.Error : IssueSeverity.Warning,
-                        Code = violation.RuleId,
-                        Message = violation.Message,
-                        ObjectPath = violation.ObjectPath,
-                        SuggestedFix = violation.SuggestedFix
-                    });
+                        allIssues.Add(new GradingIssue
+                        {
+                            Severity = result.Severity == ValidationSeverity.Error ? IssueSeverity.Error : IssueSeverity.Warning,
+                            Code = result.RuleId,
+                            Message = result.Message,
+                            ObjectPath = result.ObjectPath,
+                            SuggestedFix = result.AutoFixSuggestion
+                        });
+                    }
                 }
             }
             catch (Exception ex)

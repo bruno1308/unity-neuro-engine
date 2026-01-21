@@ -13,6 +13,7 @@ namespace NeuroEngine.Services
     public class HooksWriterService : IHooksWriter
     {
         private readonly string _hooksRoot;
+        private readonly object _fileLock = new object();
 
         public HooksWriterService(IEnvConfig config)
         {
@@ -54,7 +55,42 @@ namespace NeuroEngine.Services
             var path = Path.Combine(dir, filename);
             var json = JsonConvert.SerializeObject(data, _jsonSettings);
 
-            await File.WriteAllTextAsync(path, json);
+            await WriteFileAtomicAsync(path, json);
+        }
+
+        /// <summary>
+        /// Write file atomically using temp file + rename pattern.
+        /// Uses unique temp filename to avoid race conditions between concurrent writes.
+        /// Prevents corruption if process is interrupted during write.
+        /// </summary>
+        private async Task WriteFileAtomicAsync(string path, string content)
+        {
+            // Use unique temp filename to avoid race conditions
+            var tempPath = path + $".{Guid.NewGuid():N}.tmp";
+            try
+            {
+                // Write to temp file first
+                await File.WriteAllTextAsync(tempPath, content);
+
+                // Atomic rename (overwrite if exists)
+                lock (_fileLock)
+                {
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+                    File.Move(tempPath, path);
+                }
+            }
+            catch
+            {
+                // Clean up temp file on failure
+                if (File.Exists(tempPath))
+                {
+                    try { File.Delete(tempPath); } catch { }
+                }
+                throw;
+            }
         }
 
         public async Task<T> ReadAsync<T>(string category, string filename)

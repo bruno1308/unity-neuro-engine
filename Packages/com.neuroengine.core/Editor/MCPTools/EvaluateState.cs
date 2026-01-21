@@ -83,15 +83,16 @@ namespace NeuroEngine.Editor.MCPTools
         {
             var snapshot = grader.CaptureSnapshotAsync(scenePath).GetAwaiter().GetResult();
 
+            // SceneSnapshot has: SceneName, Timestamp, RootObjects (hierarchical), TotalObjectCount, TotalComponentsWithData
+            // GameObjectSnapshot has: Name, Active (not IsActive), Tag, Layer, Position/Rotation/Scale (float[]), Children
             return new SuccessResponse("Scene snapshot captured", new
             {
                 scene_name = snapshot.SceneName,
-                scene_path = snapshot.ScenePath,
-                captured_at = snapshot.CapturedAt,
-                game_object_count = snapshot.GameObjects?.Count ?? 0,
-                root_objects = snapshot.GameObjects?
-                    .Where(g => !g.Path.Contains("/"))
-                    .Select(g => new { name = g.Name, path = g.Path, active = g.IsActive })
+                timestamp = snapshot.Timestamp,
+                total_object_count = snapshot.TotalObjectCount,
+                total_components_with_data = snapshot.TotalComponentsWithData,
+                root_objects = snapshot.RootObjects?
+                    .Select(g => new { name = g.Name, active = g.Active, tag = g.Tag })
                     .ToList()
             });
         }
