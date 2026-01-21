@@ -21,6 +21,9 @@ namespace NeuroEngine.Core
             builder.Register<SpatialAnalysisService>(Lifetime.Singleton).As<ISpatialAnalysis>();
             builder.Register<ValidationRulesEngine>(Lifetime.Singleton).As<IValidationRules>();
 
+            // Layer 3: Interaction (Hands)
+            builder.Register<InputSimulationService>(Lifetime.Singleton).As<IInputSimulation>();
+
             // Layer 4: Persistence
             builder.Register<HooksWriterService>(Lifetime.Singleton).As<IHooksWriter>();
 
@@ -31,7 +34,7 @@ namespace NeuroEngine.Core
 
             if (_logRegistrations)
             {
-                Debug.Log("[NeuroEngine] Core services registered (Layers 1, 2, 4)");
+                Debug.Log("[NeuroEngine] Core services registered (Layers 1, 2, 3, 4)");
             }
         }
     }
