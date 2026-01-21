@@ -1,0 +1,23 @@
+{
+  "name": "com.neuroengine.core",
+  "version": "0.1.0",
+  "displayName": "Neuro-Engine Core",
+  "description": "Core infrastructure for autonomous AI-driven Unity game development",
+  "unity": "2021.3",
+  "dependencies": {
+    "jp.hadashikick.vcontainer": "https://github.com/hadashiA/VContainer.git?path=VContainer/Assets/VContainer"
+  },
+  "keywords": [
+    "ai",
+    "autonomous",
+    "game-development",
+    "mcp"
+  ],
+  "author": {
+    "name": "Neuro-Engine Protocol"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/neuroengine-core.git"
+  }
+}

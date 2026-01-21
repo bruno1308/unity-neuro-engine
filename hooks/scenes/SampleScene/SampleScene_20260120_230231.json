@@ -1,0 +1,60 @@
+{
+    "SceneName": "SampleScene",
+    "Timestamp": "2026-01-20T23:02:31.3000673Z",
+    "RootObjects": [
+        {
+            "Name": "Main Camera",
+            "Active": true,
+            "Tag": "MainCamera",
+            "Layer": 0,
+            "Position": [
+                0.0,
+                0.0,
+                -10.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Components": [
+                "Transform",
+                "Camera",
+                "AudioListener",
+                "UniversalAdditionalCameraData"
+            ],
+            "Children": []
+        },
+        {
+            "Name": "Global Light 2D",
+            "Active": true,
+            "Tag": "Untagged",
+            "Layer": 0,
+            "Position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Components": [
+                "Transform",
+                "Light2D"
+            ],
+            "Children": []
+        }
+    ]
+}

@@ -1,0 +1,82 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# NEURO-ENGINE PROTOCOL - Git Ignore
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# === SECRETS (NEVER COMMIT) ===
+.env
+*.env.local
+secrets/
+credentials/
+
+# === UNITY ===
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# MemoryCaptures can get excessive in size
+[Mm]emoryCaptures/
+
+# Recordings from Unity Recorder
+[Rr]ecordings/
+
+# Asset Store downloads
+[Aa]sset[Ss]tore[Tt]ools/
+
+# Auto-generated VS/Rider solution files
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity3D generated meta files
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# === IDE ===
+.idea/
+.vs/
+.vscode/
+*.swp
+*.swo
+*~
+
+# === OS ===
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# === HOOKS (Track selectively) ===
+# We want to track hooks structure but not all generated content
+hooks/snapshots/
+hooks/screenshots/
+hooks/recordings/
+# Keep these tracked:
+# hooks/scenes/
+# hooks/tasks/
+# hooks/convoys/
+
+# === BUILD ARTIFACTS ===
+*.apk
+*.aab
+*.unitypackage
+*.app
+*.exe

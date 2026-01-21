@@ -1,0 +1,24 @@
+{
+  "project_name": "Neuro-Engine Protocol",
+  "description": "Autonomous AI-Driven Unity Game Development Engine",
+  "version": "0.1.0",
+
+  "permissions": {
+    "allow_file_creation": true,
+    "allow_file_deletion": true,
+    "allow_bash_commands": true,
+    "allow_mcp_tools": true
+  },
+
+  "paths": {
+    "hooks": "./hooks",
+    "docs": "./Docs",
+    "assets": "./Assets",
+    "scripts": "./Assets/Scripts"
+  },
+
+  "unity": {
+    "version": "6000.x",
+    "mcp_port": 8090
+  }
+}

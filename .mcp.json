@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "unity-mcp": {
+      "command": "C:/Users/RTZ-PC/.local/bin/uvx.exe",
+      "args": ["--from", "mcpforunityserver==9.0.8", "mcp-for-unity", "--transport", "stdio"],
+      "env": {}
+    }
+  }
+}
