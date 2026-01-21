@@ -438,6 +438,212 @@ namespace NeuroEngine.Core
         Task<GraderResult> ProfilePerformanceAsync(PerformanceConfig config);
     }
 
+    #region Polish Tier (Tier 5.5 - Game Feel Elements)
+
+    /// <summary>
+    /// Polish check categories for game feel elements.
+    /// Each category catches missing "feel" elements that technical checks miss.
+    /// </summary>
+    public enum PolishCategory
+    {
+        Audio,           // Sound effects, music, audio feedback
+        VisualFeedback,  // Particles, animations, visual effects
+        Environment,     // Ground, skybox, lighting - not just objects in void
+        CodeCleanliness  // Debug.Log removal, TODO comments, etc.
+    }
+
+    /// <summary>
+    /// Result of a single polish check.
+    /// </summary>
+    public class PolishCheckResult
+    {
+        public PolishCategory Category;
+        public bool Passed;
+        public string CheckName;
+        public string Message;
+        public List<string> Issues;
+        public Dictionary<string, object> Details;
+
+        public PolishCheckResult()
+        {
+            Issues = new List<string>();
+            Details = new Dictionary<string, object>();
+        }
+
+        public static PolishCheckResult Pass(PolishCategory category, string checkName, string message = null)
+        {
+            return new PolishCheckResult
+            {
+                Category = category,
+                Passed = true,
+                CheckName = checkName,
+                Message = message ?? "Check passed"
+            };
+        }
+
+        public static PolishCheckResult Fail(PolishCategory category, string checkName, string message, List<string> issues = null)
+        {
+            return new PolishCheckResult
+            {
+                Category = category,
+                Passed = false,
+                CheckName = checkName,
+                Message = message,
+                Issues = issues ?? new List<string>()
+            };
+        }
+    }
+
+    /// <summary>
+    /// Comprehensive polish report covering all game feel elements.
+    /// </summary>
+    public class PolishReport
+    {
+        public DateTime Timestamp;
+        public string SceneName;
+        public float OverallScore;          // 0.0 to 1.0
+        public bool HasCriticalIssues;
+        public int TotalChecks;
+        public int PassedChecks;
+        public int FailedChecks;
+        public long DurationMs;
+
+        // Category summaries
+        public PolishCategorySummary AudioSummary;
+        public PolishCategorySummary VisualFeedbackSummary;
+        public PolishCategorySummary EnvironmentSummary;
+        public PolishCategorySummary CodeCleanlinessSummary;
+
+        // All individual check results
+        public List<PolishCheckResult> AllChecks;
+
+        public PolishReport()
+        {
+            AllChecks = new List<PolishCheckResult>();
+            AudioSummary = new PolishCategorySummary { Category = PolishCategory.Audio };
+            VisualFeedbackSummary = new PolishCategorySummary { Category = PolishCategory.VisualFeedback };
+            EnvironmentSummary = new PolishCategorySummary { Category = PolishCategory.Environment };
+            CodeCleanlinessSummary = new PolishCategorySummary { Category = PolishCategory.CodeCleanliness };
+        }
+
+        public PolishCategorySummary GetSummary(PolishCategory category)
+        {
+            return category switch
+            {
+                PolishCategory.Audio => AudioSummary,
+                PolishCategory.VisualFeedback => VisualFeedbackSummary,
+                PolishCategory.Environment => EnvironmentSummary,
+                PolishCategory.CodeCleanliness => CodeCleanlinessSummary,
+                _ => null
+            };
+        }
+    }
+
+    /// <summary>
+    /// Summary for a single polish category.
+    /// </summary>
+    public class PolishCategorySummary
+    {
+        public PolishCategory Category;
+        public bool Passed;
+        public int TotalChecks;
+        public int PassedChecks;
+        public float Score;                 // 0.0 to 1.0
+        public List<string> CriticalIssues;
+
+        public PolishCategorySummary()
+        {
+            CriticalIssues = new List<string>();
+        }
+    }
+
+    /// <summary>
+    /// Configuration for polish grading.
+    /// </summary>
+    public class PolishConfig
+    {
+        /// <summary>
+        /// Scene path to analyze (null = active scene).
+        /// </summary>
+        public string ScenePath;
+
+        /// <summary>
+        /// Path to game scripts folder for code cleanliness checks.
+        /// Defaults to "Assets/Scripts" - excludes engine/packages.
+        /// </summary>
+        public string GameScriptsPath = "Assets/Scripts";
+
+        /// <summary>
+        /// Categories to check (null = all).
+        /// </summary>
+        public List<PolishCategory> EnabledCategories;
+
+        /// <summary>
+        /// Whether to treat Debug.Log as a failure (default: true for release).
+        /// </summary>
+        public bool FailOnDebugLog = true;
+
+        /// <summary>
+        /// Minimum number of AudioSources expected (0 = just check they exist).
+        /// </summary>
+        public int MinAudioSources = 0;
+
+        /// <summary>
+        /// Minimum number of ParticleSystems expected (0 = just check they exist).
+        /// </summary>
+        public int MinParticleSystems = 0;
+
+        public PolishConfig()
+        {
+            EnabledCategories = null; // All categories
+        }
+
+        public bool IsCategoryEnabled(PolishCategory category)
+        {
+            return EnabledCategories == null || EnabledCategories.Contains(category);
+        }
+    }
+
+    /// <summary>
+    /// Tier 5.5: Polish grading - game feel elements.
+    /// Catches missing audio, visual feedback, environment, and debug code.
+    /// This addresses Problem #9: agents missing sound, environment, and visual feedback.
+    /// </summary>
+    public interface IPolishGrader
+    {
+        /// <summary>
+        /// Run all polish checks and return a comprehensive report.
+        /// </summary>
+        PolishReport GradePolish(PolishConfig config = null);
+
+        /// <summary>
+        /// Check audio feedback - AudioSource components and AudioClip assignments.
+        /// </summary>
+        PolishCheckResult CheckAudioFeedback(string scenePath = null);
+
+        /// <summary>
+        /// Check visual feedback - ParticleSystem and Animator components.
+        /// </summary>
+        PolishCheckResult CheckVisualFeedback(string scenePath = null);
+
+        /// <summary>
+        /// Check environment - ground/floor objects, camera background.
+        /// </summary>
+        PolishCheckResult CheckEnvironment(string scenePath = null);
+
+        /// <summary>
+        /// Check code cleanliness - Debug.Log statements in game scripts.
+        /// </summary>
+        PolishCheckResult CheckCodeCleanliness(string gameScriptsPath = "Assets/Scripts");
+
+        /// <summary>
+        /// Convert polish report to standard GraderResult format.
+        /// </summary>
+        GraderResult ToGraderResult(PolishReport report);
+    }
+
+    #endregion
+
     /// <summary>
     /// Configuration for juice measurement.
     /// </summary>

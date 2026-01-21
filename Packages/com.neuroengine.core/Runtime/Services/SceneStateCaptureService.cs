@@ -33,10 +33,11 @@ namespace NeuroEngine.Services
             "UnityEngine.RuntimeAnimatorController"
         };
 
-        // Components to exclude by default (too verbose, rarely useful for AI)
+        // Components to exclude by default (too verbose, rarely useful for AI, or cause runtime warnings)
         private static readonly HashSet<string> DefaultExcludeComponents = new HashSet<string>
         {
-            "Transform", "RectTransform", "CanvasRenderer"
+            "Transform", "RectTransform", "CanvasRenderer",
+            "AudioSource", "AudioListener" // AudioSource.time/timeSamples throw warnings when no clip is playing
         };
 
         public SceneStateCaptureService(IHooksWriter hooksWriter)

@@ -179,6 +179,9 @@ namespace NeuroEngine.Editor
             if (type == typeof(IStateGrader))
                 return new StateGraderService() as T;
 
+            if (type == typeof(IPolishGrader))
+                return new PolishGraderService() as T;
+
             // For concrete types, try parameterless constructor
             if (!type.IsInterface && !type.IsAbstract)
             {
