@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using MCPForUnity.Editor.Helpers;
 using MCPForUnity.Editor.Tools;
-using NeuroEngine.Services;
+using NeuroEngine.Core;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -18,7 +18,8 @@ namespace NeuroEngine.Editor.MCPTools
     [McpForUnityTool("simulate_input", Description = "Simulates player input (keyboard, mouse). Use during Play Mode to control the game. Supports key presses, mouse clicks, and mouse movement.")]
     public static class SimulateInput
     {
-        private static InputSimulationService _inputService;
+        // Cache the service reference for held key queries
+        private static IInputSimulation _inputService;
 
         public static object HandleCommand(JObject @params)
         {
@@ -34,7 +35,7 @@ namespace NeuroEngine.Editor.MCPTools
                 return new ErrorResponse("Cannot simulate input outside of Play Mode. Use manage_editor(action='play') first.");
             }
 
-            _inputService ??= new InputSimulationService();
+            _inputService = EditorServiceLocator.Get<IInputSimulation>();
 
             try
             {

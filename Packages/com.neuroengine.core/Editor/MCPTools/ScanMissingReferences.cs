@@ -3,9 +3,7 @@ using System;
 using MCPForUnity.Editor.Helpers;
 using MCPForUnity.Editor.Tools;
 using NeuroEngine.Core;
-using NeuroEngine.Services;
 using Newtonsoft.Json.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace NeuroEngine.Editor.MCPTools
@@ -17,15 +15,13 @@ namespace NeuroEngine.Editor.MCPTools
     [McpForUnityTool("scan_missing_references", Description = "Scans GameObjects, scenes, or prefabs for null/missing serialized field references. Returns a report of all missing references with severity levels.")]
     public static class ScanMissingReferences
     {
-        private static MissingReferenceDetector _detector;
-
         public static object HandleCommand(JObject @params)
         {
             string target = @params["target"]?.ToString();
             string targetType = @params["target_type"]?.ToString() ?? "scene";
             bool includeChildren = @params["include_children"]?.Value<bool>() ?? true;
 
-            _detector ??= new MissingReferenceDetector();
+            var detector = EditorServiceLocator.Get<IMissingReferenceDetector>();
 
             try
             {
@@ -43,7 +39,7 @@ namespace NeuroEngine.Editor.MCPTools
                         {
                             return new ErrorResponse($"GameObject '{target}' not found in scene");
                         }
-                        report = _detector.Scan(go, includeChildren);
+                        report = detector.Scan(go, includeChildren);
                         break;
 
                     case "prefab":
@@ -51,12 +47,12 @@ namespace NeuroEngine.Editor.MCPTools
                         {
                             return new ErrorResponse("target parameter required when target_type is 'prefab'");
                         }
-                        report = _detector.ScanPrefab(target);
+                        report = detector.ScanPrefab(target);
                         break;
 
                     case "scene":
                     default:
-                        report = _detector.ScanScene();
+                        report = detector.ScanScene();
                         break;
                 }
 

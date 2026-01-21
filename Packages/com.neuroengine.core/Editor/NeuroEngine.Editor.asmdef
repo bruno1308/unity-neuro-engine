@@ -3,7 +3,8 @@
   "rootNamespace": "NeuroEngine.Editor",
   "references": [
     "NeuroEngine.Runtime",
-    "MCPForUnity.Editor"
+    "MCPForUnity.Editor",
+    "VContainer"
   ],
   "includePlatforms": [
     "Editor"

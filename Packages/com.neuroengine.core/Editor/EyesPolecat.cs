@@ -25,14 +25,7 @@ namespace NeuroEngine.Editor
         private static List<string> _recentSnapshots = new List<string>();
         private const int MaxRecentSnapshots = 10;
 
-        // Services (created on demand since we're in Editor)
-        // Note: We don't use DI here since this is editor-only and needs to work standalone
-        private static SceneStateCaptureService _sceneCapture;
-        private static UIAccessibilityService _uiAccessibility;
-        private static SpatialAnalysisService _spatialAnalysis;
-        private static ValidationRulesEngine _validationRules;
-
-        // Hooks root path (editor-only, no DI)
+        // Hooks root path
         private static string _hooksRoot;
 
         // UI
@@ -63,11 +56,6 @@ namespace NeuroEngine.Editor
 
         private static void InitializeServices()
         {
-            _sceneCapture ??= new SceneStateCaptureService();
-            _uiAccessibility ??= new UIAccessibilityService();
-            _spatialAnalysis ??= new SpatialAnalysisService();
-            _validationRules ??= new ValidationRulesEngine();
-
             if (string.IsNullOrEmpty(_hooksRoot))
             {
                 _hooksRoot = Path.Combine(Application.dataPath, "..", "hooks");
@@ -116,8 +104,9 @@ namespace NeuroEngine.Editor
 
             try
             {
-                // Scene state - use shared service to avoid code duplication
-                state.Scene = _sceneCapture.CaptureScene();
+                // Scene state - use EditorServiceLocator for consistent DI
+                var sceneCapture = EditorServiceLocator.Get<ISceneStateCapture>();
+                state.Scene = sceneCapture.CaptureScene();
             }
             catch (Exception e)
             {
@@ -127,7 +116,8 @@ namespace NeuroEngine.Editor
             try
             {
                 // UI graph (may fail if no UI in scene)
-                state.UI = _uiAccessibility.CaptureUIState();
+                var uiAccessibility = EditorServiceLocator.Get<IUIAccessibility>();
+                state.UI = uiAccessibility.CaptureUIState();
             }
             catch (Exception e)
             {
@@ -137,7 +127,8 @@ namespace NeuroEngine.Editor
             try
             {
                 // Spatial analysis
-                state.Spatial = _spatialAnalysis.AnalyzeScene();
+                var spatialAnalysis = EditorServiceLocator.Get<ISpatialAnalysis>();
+                state.Spatial = spatialAnalysis.AnalyzeScene();
             }
             catch (Exception e)
             {
@@ -147,7 +138,8 @@ namespace NeuroEngine.Editor
             try
             {
                 // Validation
-                state.Validation = _validationRules.ValidateScene();
+                var validationRules = EditorServiceLocator.Get<IValidationRules>();
+                state.Validation = validationRules.ValidateScene();
             }
             catch (Exception e)
             {

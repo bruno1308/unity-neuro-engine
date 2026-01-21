@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using MCPForUnity.Editor.Helpers;
 using MCPForUnity.Editor.Tools;
-using NeuroEngine.Services;
+using NeuroEngine.Core;
 using Newtonsoft.Json.Linq;
 
 namespace NeuroEngine.Editor.MCPTools
@@ -15,19 +15,17 @@ namespace NeuroEngine.Editor.MCPTools
     [McpForUnityTool("get_ui_accessibility_graph", Description = "Captures complete UI state as an accessibility graph. Shows all UI elements (buttons, fields, labels), their positions, visibility, interactability, and what's blocking them. Works with both UI Toolkit and uGUI.")]
     public static class GetUIAccessibilityGraph
     {
-        private static UIAccessibilityService _uiService;
-
         public static object HandleCommand(JObject @params)
         {
             string filter = @params["filter"]?.ToString();
             bool interactableOnly = @params["interactable_only"]?.Value<bool>() ?? false;
             bool blockedOnly = @params["blocked_only"]?.Value<bool>() ?? false;
 
-            _uiService ??= new UIAccessibilityService();
+            var uiService = EditorServiceLocator.Get<IUIAccessibility>();
 
             try
             {
-                var graph = _uiService.CaptureUIState();
+                var graph = uiService.CaptureUIState();
                 var elements = graph.Elements;
 
                 // Apply filters

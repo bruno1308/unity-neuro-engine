@@ -3,9 +3,8 @@ using System;
 using System.Linq;
 using MCPForUnity.Editor.Helpers;
 using MCPForUnity.Editor.Tools;
-using NeuroEngine.Services;
+using NeuroEngine.Core;
 using Newtonsoft.Json.Linq;
-using UnityEngine;
 
 namespace NeuroEngine.Editor.MCPTools
 {
@@ -16,8 +15,6 @@ namespace NeuroEngine.Editor.MCPTools
     [McpForUnityTool("analyze_spatial", Description = "Analyzes spatial relationships in the scene. Detects off-screen objects, scale anomalies, and collider overlaps. Useful for finding objects that may be invisible or incorrectly placed.")]
     public static class AnalyzeSpatial
     {
-        private static SpatialAnalysisService _spatialService;
-
         public static object HandleCommand(JObject @params)
         {
             float minScale = @params["min_scale"]?.Value<float>() ?? 0.01f;
@@ -25,14 +22,14 @@ namespace NeuroEngine.Editor.MCPTools
             bool checkOverlaps = @params["check_overlaps"]?.Value<bool>() ?? true;
             string cameraName = @params["camera"]?.ToString();
 
-            _spatialService ??= new SpatialAnalysisService();
+            var spatialService = EditorServiceLocator.Get<ISpatialAnalysis>();
 
             try
             {
                 // Build report using individual methods to respect parameters
-                var offScreen = _spatialService.FindOffScreenObjects();
-                var scaleAnomalies = _spatialService.FindScaleAnomalies(minScale, maxScale);
-                var overlaps = checkOverlaps ? _spatialService.FindOverlappingColliders() : new System.Collections.Generic.List<NeuroEngine.Core.ColliderOverlap>();
+                var offScreen = spatialService.FindOffScreenObjects();
+                var scaleAnomalies = spatialService.FindScaleAnomalies(minScale, maxScale);
+                var overlaps = checkOverlaps ? spatialService.FindOverlappingColliders() : new System.Collections.Generic.List<NeuroEngine.Core.ColliderOverlap>();
 
                 int issuesFound = offScreen.Count + scaleAnomalies.Count + overlaps.Count;
                 string summary = $"Found {issuesFound} issues: {offScreen.Count} off-screen, {scaleAnomalies.Count} scale anomalies, {overlaps.Count} overlaps";
