@@ -1,0 +1,14 @@
+{
+  "name": "neuro-marketplace",
+  "description": "Local marketplace for Neuro-Engine plugins",
+  "owner": {
+    "name": "Neuro-Engine Team"
+  },
+  "plugins": [
+    {
+      "name": "neuro-engine",
+      "source": "./plugins/neuro-engine",
+      "description": "Autonomous AI-driven Unity game development"
+    }
+  ]
+}

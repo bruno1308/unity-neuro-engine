@@ -1,0 +1,64 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[neuro-engine] Remember: For GDD implementation, use /neuro-engine:orchestrate or spawn parallel polecat agents. Mayor delegates, never implements directly.'"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "mcp__unity-mcp__create_script",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[neuro-engine] WARNING: Direct script creation detected. Should this be delegated to script-polecat? Mayor must not implement directly.'"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__unity-mcp__manage_gameobject",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[neuro-engine] WARNING: Direct GameObject operation. Consider delegating to scene-polecat for create/modify operations.'"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__unity-mcp__manage_material",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[neuro-engine] WARNING: Direct material operation. Consider delegating to scene-polecat.'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[neuro-engine] File modified. Consider running /neuro-engine:validate'"
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[neuro-engine] Agent spawned. Mayor MCP call counter reset.'"
+          }
+        ]
+      }
+    ]
+  }
+}
