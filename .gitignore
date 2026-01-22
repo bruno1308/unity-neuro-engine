@@ -89,3 +89,9 @@ Assets/Screenshots/
 # Iteration 2 game files
 Assets/Iteration2/
 Assets/Iteration2.meta
+
+# Local settings
+.claude/settings.local.json
+
+# Screenshots meta (folder is ignored)
+Assets/Screenshots.meta
