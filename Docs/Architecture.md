@@ -76,7 +76,7 @@ This document presents the **Neuro-Engine Protocol** — a comprehensive archite
 | # | Principle | Rule |
 |---|-----------|------|
 | 1 | **Observability** | If AI cannot observe it, it does not exist |
-| 2 | **Agency** | If AI cannot act on it, it cannot fix it |
+| 2 | **Agency** | If AI cannot act on it, it cannot fix it (includes playing games) |
 | 3 | **Persistence** | AI agents are ephemeral; project state must be permanent |
 | 4 | **Verification Layering** | No single evaluation is sufficient |
 | 5 | **Decomposed Subjectivity** | "Feel" is measurable components |
@@ -172,6 +172,31 @@ This document presents the **Neuro-Engine Protocol** — a comprehensive archite
 - **Input Simulation** — Keyboard, mouse, gamepad injection
 - **Headless Execution** — Docker containers with virtual framebuffer
 - **Integration Options:** [GameDriver](https://www.gamedriver.io/), [AltTester](https://alttester.com/), [Unity-MCP](https://github.com/CoplayDev/unity-mcp)
+
+### Auto-Play (Agency Applied to Gameplay)
+
+**Principle 2 — Agency:** If AI cannot act on it, it cannot fix it.
+
+Playing games is a form of agency. If the engine cannot play its own games, it cannot evaluate gameplay quality.
+
+**Solution:** Every game MUST implement an `IAutoPlayer` that simulates player behavior.
+
+```csharp
+namespace NeuroEngine.Core
+{
+    public interface IAutoPlayer
+    {
+        bool IsEnabled { get; set; }
+        void Tick();  // Called every frame to decide and execute actions
+    }
+}
+```
+
+**Requirements:**
+1. Every GDD must include "Auto-Play Strategy" section describing the AI approach
+2. Evaluation cannot proceed to behavioral testing without a working AutoPlayer
+3. AutoPlayer must produce valid gameplay, not random inputs
+4. AutoPlayer can be toggled for human testing
 
 📁 **Code Examples:** [examples/layer3-interaction.md](examples/layer3-interaction.md)
 
@@ -273,11 +298,52 @@ Tasks grouped into Convoys for coordinated delivery with dependencies and comple
 
 **Goal:** Fully autonomous asset creation from text descriptions.
 
-### Visual Assets (Meshy.ai)
+### CRITICAL: No Placeholder Graphics
 
-- **Text-to-3D** — Generate models from descriptions
-- **AI Texturing** — Re-texture existing models
-- **Image-to-3D** — Convert concept art to models
+**Problem:** Plain colored rectangles are NOT "juicy" or visually appealing. VLM will never judge a game with primitive shapes as polished.
+
+**Rule:** Layer 7 MUST produce actual visual assets, not:
+- ❌ Solid-color sprites
+- ❌ Unity primitive shapes (cubes, spheres)
+- ❌ "Placeholder" graphics
+- ❌ Programmer art
+
+**Required Visual Quality:**
+- ✅ Textured sprites with detail
+- ✅ Consistent art style
+- ✅ Visual effects (glow, particles with textures)
+- ✅ Animations for interactive elements
+
+### 2D Visual Assets (Meshy.ai)
+
+| Feature | Description | Use Case |
+|---------|-------------|----------|
+| **Text-to-Image** | Generate images from text prompts | Sprites, UI elements, textures |
+| **Image-to-Image** | Transform images with prompts | Style transfer, variations |
+
+**Asset-Polecat 2D Workflow:**
+1. Read GDD art style requirements
+2. Generate sprites via Meshy Text-to-Image API
+3. Import to Unity, configure sprite settings
+4. Apply to game objects
+5. VLM validates visual quality before proceeding
+
+### 3D Visual Assets (Meshy.ai)
+
+**3D Generation:**
+| Feature | Description | Use Case |
+|---------|-------------|----------|
+| **Text-to-3D** | Generate models from text | Characters, props, environment |
+| **Image-to-3D** | Convert image to 3D model | Concept art to model |
+| **Multi-Image-to-3D** | Generate from multiple refs | Accurate character models |
+
+**3D Processing:**
+| Feature | Description | Use Case |
+|---------|-------------|----------|
+| **Remesh** | Optimize and export models | Format conversion, LOD |
+| **Retexture** | Apply new textures | Reskinning, style changes |
+| **Rigging** | Auto-rig models | Prepare for animation |
+| **Animation** | Apply from animation library | Character movement |
 
 ### Audio (ElevenLabs)
 
@@ -285,11 +351,11 @@ Tasks grouped into Convoys for coordinated delivery with dependencies and comple
 - **Voice** — NPC dialogue, announcer lines
 - **Music** — Ambient and action tracks
 
-### Animation (Mixamo)
+### Animation (Meshy.ai)
 
-- **Auto-Rigging** — Rig Meshy-generated models automatically
-- **Animation Presets** — Pre-defined sets per character type
-- **Procedural Animation** — IK-based alternative for non-humanoids
+- **Auto-Rigging** — Rig 3D models automatically via Meshy API
+- **Animation Library** — Apply pre-built animations from Meshy's library
+- **Procedural Animation** — IK-based alternative for non-humanoids (Unity-side)
 
 ### Level Generation
 
@@ -352,7 +418,7 @@ Tasks grouped into Convoys for coordinated delivery with dependencies and comple
 - Meshy.ai integration
 - ElevenLabs integration
 - Style guide system
-- Mixamo animation pipeline
+- Meshy rigging and animation pipeline
 - Level generation system
 - Feel presets library
 
@@ -459,7 +525,7 @@ Tasks grouped into Convoys for coordinated delivery with dependencies and comple
 |---------|------|
 | Meshy.ai | [Website](https://www.meshy.ai/) |
 | ElevenLabs | [Website](https://elevenlabs.io/) |
-| Mixamo | [Website](https://www.mixamo.com/) |
+| Meshy Docs | [Website](https://docs.meshy.ai/) |
 
 ### VLMs
 
