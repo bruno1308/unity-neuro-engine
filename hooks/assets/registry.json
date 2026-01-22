@@ -1,149 +1,86 @@
 {
   "assets": [
     {
-      "id": "asset-001",
-      "type": "model",
+      "id": "sprite-ball-001",
+      "type": "sprite",
       "source": "meshy",
-      "name": "ShootingTarget",
-      "prompt": "simple carnival shooting gallery target, circular bullseye with red and white concentric rings, wooden stand, low poly game asset, isometric view, single object on dark background",
-      "path": "Assets/Iteration1/Models/ShootingTarget.fbx",
-      "guid": "343086452df528e4a85ea0b577f01d3d",
-      "textures": {
-        "baseColor": {
-          "path": "Assets/Iteration1/Models/Textures/ShootingTarget_BaseColor.png",
-          "guid": "cb0f21ab27045b14cac251bdbbf8a40a"
-        },
-        "metallic": {
-          "path": "Assets/Iteration1/Models/Textures/ShootingTarget_Metallic.png",
-          "guid": "1f97899cb091b404185029aa2056d581"
-        },
-        "roughness": {
-          "path": "Assets/Iteration1/Models/Textures/ShootingTarget_Roughness.png",
-          "guid": "6ca7325401be4bd4ab67f3f7c38f77c2"
-        },
-        "normal": {
-          "path": "Assets/Iteration1/Models/Textures/ShootingTarget_Normal.png",
-          "guid": "b416a0bd284b96742a1e254e09e475d9"
-        }
-      },
-      "generatedAt": "2026-01-21T20:14:00Z",
-      "textToImageJobId": "019be1f5-96c9-77f3-9b3c-4ec254df14a5",
-      "imageTo3dJobId": "019be1f8-0786-73b4-8e7f-46aacda1a5cd",
-      "cost_credits_estimate": 14,
-      "iteration": "Iteration1",
-      "status": "imported"
+      "api": "text-to-image",
+      "prompt": "Glowing energy ball sprite, bright cyan and white core, electric particle effects radiating outward, game-ready 2D sprite, transparent background, centered composition, arcade game style, clean edges, high contrast glow effect",
+      "path": "Assets/Iteration2/Sprites/Ball.png",
+      "generatedAt": "2026-01-22T20:52:00Z",
+      "jobId": "019be741-da5d-7869-a267-291e4701894a",
+      "resolution": "1024x1024",
+      "aspectRatio": "1:1"
     },
     {
-      "id": "asset-002",
-      "type": "audio",
-      "subtype": "sfx",
-      "source": "elevenlabs",
-      "name": "paddle_hit",
-      "prompt": "A satisfying, punchy thwack sound like a paddle hitting a ball in ping pong or air hockey. Short, crisp, impactful.",
-      "path": "Assets/Iteration2/Audio/paddle_hit.mp3",
-      "guid": "127e3a99efbf1d74099cec578053b1ce",
-      "duration": 0.5,
-      "generatedAt": "2026-01-22T17:44:59Z",
-      "iteration": "Iteration2",
-      "status": "imported"
+      "id": "sprite-paddle-001",
+      "type": "sprite",
+      "source": "meshy",
+      "api": "text-to-image",
+      "prompt": "Sleek futuristic paddle sprite, horizontal orientation, metallic chrome surface, glowing cyan edge highlights, sci-fi gaming aesthetic, game-ready 2D sprite, transparent background, centered composition, clean professional design",
+      "path": "Assets/Iteration2/Sprites/Paddle.png",
+      "generatedAt": "2026-01-22T20:52:00Z",
+      "jobId": "019be741-e999-76fb-9057-d8dd005fc161",
+      "resolution": "1376x768",
+      "aspectRatio": "16:9"
     },
     {
-      "id": "asset-003",
-      "type": "audio",
-      "subtype": "sfx",
-      "source": "elevenlabs",
-      "name": "brick_hit",
-      "prompt": "A solid impact crack sound, like hitting a ceramic tile or glass block. Brief chip or crack noise.",
-      "path": "Assets/Iteration2/Audio/brick_hit.mp3",
-      "guid": "07701c82509f0cb41ab955b3564796ba",
-      "duration": 0.5,
-      "generatedAt": "2026-01-22T17:45:03Z",
-      "iteration": "Iteration2",
-      "status": "imported"
+      "id": "sprite-brick-standard-001",
+      "type": "sprite",
+      "source": "meshy",
+      "api": "text-to-image",
+      "prompt": "Blue glass crystal brick sprite, transparent fragile appearance, glowing blue edges, slight internal reflections, game-ready 2D breakout game brick, clean rectangular shape, arcade game style, transparent background",
+      "path": "Assets/Iteration2/Sprites/Brick_Standard.png",
+      "generatedAt": "2026-01-22T20:53:00Z",
+      "jobId": "019be742-55ac-75bd-91d4-686e7757742f",
+      "resolution": "1200x896",
+      "aspectRatio": "4:3"
     },
     {
-      "id": "asset-004",
-      "type": "audio",
-      "subtype": "sfx",
-      "source": "elevenlabs",
-      "name": "brick_destroy",
-      "prompt": "A satisfying glass or crystal shattering sound. Bright, crisp destruction with small debris sounds.",
-      "path": "Assets/Iteration2/Audio/brick_destroy.mp3",
-      "guid": "9f620b98919757c47b6b641d88225f28",
-      "duration": 0.8,
-      "generatedAt": "2026-01-22T17:44:30Z",
-      "iteration": "Iteration2",
-      "status": "imported"
+      "id": "sprite-brick-tough-001",
+      "type": "sprite",
+      "source": "meshy",
+      "api": "text-to-image",
+      "prompt": "Green reinforced brick sprite, tough cracked texture, emerald green color, metal rivets on corners, slightly damaged but strong looking, game-ready 2D breakout game brick, arcade game style, transparent background",
+      "path": "Assets/Iteration2/Sprites/Brick_Tough.png",
+      "generatedAt": "2026-01-22T20:53:00Z",
+      "jobId": "019be742-607a-786b-b25c-31c3737fbf23",
+      "resolution": "1200x896",
+      "aspectRatio": "4:3"
     },
     {
-      "id": "asset-005",
-      "type": "audio",
-      "subtype": "sfx",
-      "source": "elevenlabs",
-      "name": "wall_bounce",
-      "prompt": "A soft, subtle ping or boop sound. Gentle bounce like a rubber ball on a hard surface.",
-      "path": "Assets/Iteration2/Audio/wall_bounce.mp3",
-      "guid": "c74146b4f63f8164c91f0b8d9343bd64",
-      "duration": 0.5,
-      "generatedAt": "2026-01-22T17:45:07Z",
-      "iteration": "Iteration2",
-      "status": "imported"
+      "id": "sprite-brick-hard-001",
+      "type": "sprite",
+      "source": "meshy",
+      "api": "text-to-image",
+      "prompt": "Orange armored metal brick sprite, heavy duty industrial design, orange metallic surface with warning stripes, bolted plates, thick armor plating, game-ready 2D breakout game brick, arcade game style, transparent background",
+      "path": "Assets/Iteration2/Sprites/Brick_Hard.png",
+      "generatedAt": "2026-01-22T20:53:00Z",
+      "jobId": "019be742-6bc3-75bd-990a-b8b4380df514",
+      "resolution": "1200x896",
+      "aspectRatio": "4:3"
     },
     {
-      "id": "asset-006",
-      "type": "audio",
-      "subtype": "sfx",
-      "source": "elevenlabs",
-      "name": "combo_up",
-      "prompt": "A short rising positive chime, like leveling up or combo increment. Bright, encouraging tone.",
-      "path": "Assets/Iteration2/Audio/combo_up.mp3",
-      "guid": "50a2f6da6358940459814ee96feaaeb7",
-      "duration": 0.5,
-      "generatedAt": "2026-01-22T17:45:11Z",
-      "iteration": "Iteration2",
-      "status": "imported"
-    },
-    {
-      "id": "asset-007",
-      "type": "audio",
-      "subtype": "sfx",
-      "source": "elevenlabs",
-      "name": "ball_lost",
-      "prompt": "A negative buzzer or thud sound indicating failure. Brief, mildly unpleasant but not harsh.",
-      "path": "Assets/Iteration2/Audio/ball_lost.mp3",
-      "guid": "5a2f24c9dc99d034bb2bc15b478a6aa6",
-      "duration": 0.5,
-      "generatedAt": "2026-01-22T17:45:26Z",
-      "iteration": "Iteration2",
-      "status": "imported"
-    },
-    {
-      "id": "asset-008",
-      "type": "audio",
-      "subtype": "sfx",
-      "source": "elevenlabs",
-      "name": "level_clear",
-      "prompt": "A short victory fanfare jingle. Triumphant, celebratory arcade game sound.",
-      "path": "Assets/Iteration2/Audio/level_clear.mp3",
-      "guid": "7186fc2061a32c0489274d5ac31bf3bd",
-      "duration": 2.0,
-      "generatedAt": "2026-01-22T17:45:30Z",
-      "iteration": "Iteration2",
-      "status": "imported"
-    },
-    {
-      "id": "asset-009",
-      "type": "audio",
-      "subtype": "sfx",
-      "source": "elevenlabs",
-      "name": "launch",
-      "prompt": "A quick whoosh or swoosh sound for ball launching. Dynamic, implies motion and speed.",
-      "path": "Assets/Iteration2/Audio/launch.mp3",
-      "guid": "ff68e78ad81c6df40af9a521f0438b06",
-      "duration": 0.5,
-      "generatedAt": "2026-01-22T17:45:34Z",
-      "iteration": "Iteration2",
-      "status": "imported"
+      "id": "sprite-brick-unbreakable-001",
+      "type": "sprite",
+      "source": "meshy",
+      "api": "text-to-image",
+      "prompt": "Gray stone concrete brick sprite, indestructible solid appearance, dark gray weathered stone texture, ancient runes carved into surface, impenetrable fortress block, game-ready 2D breakout game brick, arcade game style, transparent background",
+      "path": "Assets/Iteration2/Sprites/Brick_Unbreakable.png",
+      "generatedAt": "2026-01-22T20:53:00Z",
+      "jobId": "019be742-78ac-7810-a4f9-71c15ff6d670",
+      "resolution": "1200x896",
+      "aspectRatio": "4:3"
     }
-  ]
+  ],
+  "summary": {
+    "totalAssets": 6,
+    "byType": {
+      "sprite": 6
+    },
+    "bySource": {
+      "meshy": 6
+    },
+    "lastUpdated": "2026-01-22T20:55:00Z"
+  }
 }
