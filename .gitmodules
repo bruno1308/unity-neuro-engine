@@ -1,0 +1,3 @@
+[submodule "neuro-engine"]
+	path = neuro-engine
+	url = https://github.com/bruno1308/unity-neuro-engine-plugin.git
