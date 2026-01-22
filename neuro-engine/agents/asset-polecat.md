@@ -95,6 +95,30 @@ Assets/
 - API rate limits - implement backoff
 - Generation can take minutes - use polling
 - Quality varies - may need regeneration
+- **AI images lack true transparency** - see solution below
+
+### Transparency Problem & Solution
+
+**Problem:** AI image generators (including Meshy) cannot produce true PNG alpha channels. They output:
+- Fake checkerboard transparency
+- Solid backgrounds
+- No alpha channel
+
+**Solution:** Use the `extract-alpha` skill to post-process generated images.
+
+**Workflow for Transparent 2D Sprites:**
+
+Option A: Two-Pass (Best Quality)
+1. Generate image with prompt: `"{subject} on pure solid white #FFFFFF background"`
+2. Use Meshy image-to-image: `"Change background to pure solid black #000000, keep subject unchanged"`
+3. Run: `python neuro-engine/skills/extract-alpha/extract_alpha.py white.png black.png output.png`
+
+Option B: Single-Pass (Faster)
+1. Generate image with any background
+2. Run: `python neuro-engine/skills/extract-alpha/extract_alpha.py --single input.png output.png`
+   (Requires `pip install rembg[cpu]`)
+
+**CRITICAL:** Always process 2D sprites through extract-alpha before Unity import.
 
 ## Communication
 - Track jobs in: `hooks/assets/jobs.json`

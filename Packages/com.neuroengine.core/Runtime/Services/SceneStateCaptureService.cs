@@ -38,9 +38,13 @@ namespace NeuroEngine.Services
         {
             { "UnityEngine.MeshFilter", new HashSet<string> { "mesh" } }, // Accessing .mesh in edit mode creates instance
             { "UnityEngine.MeshCollider", new HashSet<string> { "sharedMesh" } }, // Can cause issues
-            { "UnityEngine.SkinnedMeshRenderer", new HashSet<string> { "sharedMesh", "material", "materials" } }, // Combines mesh and material warnings
-            { "UnityEngine.Renderer", new HashSet<string> { "material", "materials" } }, // Accessing .material in edit mode creates instance
-            { "UnityEngine.MeshRenderer", new HashSet<string> { "material", "materials" } }
+            { "UnityEngine.SkinnedMeshRenderer", new HashSet<string> { "sharedMesh" } }
+        };
+
+        // Properties to skip on any Renderer-derived type (material/materials cause instantiation warnings)
+        private static readonly HashSet<string> RendererSkipProperties = new HashSet<string>
+        {
+            "material", "materials", "sharedMaterial", "sharedMaterials"
         };
 
         // Components to exclude by default (too verbose, rarely useful for AI, or cause runtime warnings)
@@ -245,6 +249,10 @@ namespace NeuroEngine.Services
 
                     // Skip properties that cause instantiation/warnings in edit mode
                     if (SkipProperties.TryGetValue(type.FullName, out var skipProps) && skipProps.Contains(prop.Name))
+                        continue;
+
+                    // Skip material-related properties on any Renderer-derived type
+                    if (typeof(Renderer).IsAssignableFrom(type) && RendererSkipProperties.Contains(prop.Name))
                         continue;
 
                     // Only capture simple value types and strings from properties
