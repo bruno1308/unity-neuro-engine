@@ -1,0 +1,133 @@
+{
+  "iteration": "Iteration2",
+  "name": "Juicy Breakout",
+  "gdd": "Assets/Iteration2/GDD.md",
+  "created": "2026-01-22T17:45:00Z",
+  "status": "planning_complete",
+
+  "workstreams": {
+    "code": {
+      "agent": "script-polecat",
+      "description": "All C# scripts for game logic, juice systems, and UI",
+      "tasks": [
+        {"id": "code-001", "name": "GameEvents.cs", "description": "Static event hub for all game events (OnBrickHit, OnBallLost, etc.)"},
+        {"id": "code-002", "name": "Ball.cs", "description": "Ball movement, collision, squash/stretch, trail attachment"},
+        {"id": "code-003", "name": "Paddle.cs", "description": "Paddle input (mouse + keyboard), movement, squash on direction change"},
+        {"id": "code-004", "name": "Brick.cs", "description": "Brick types (Standard/Tough/Hard/Unbreakable), health, damage, destruction"},
+        {"id": "code-005", "name": "GameManager.cs", "description": "Game states, lives, level management, brick grid spawning"},
+        {"id": "code-006", "name": "ComboSystem.cs", "description": "Combo tracking, reset on paddle hit, multiplier calculation"},
+        {"id": "code-007", "name": "ScoreManager.cs", "description": "Score tracking, high score, score events"},
+        {"id": "code-008", "name": "ScreenShaker.cs", "description": "Camera shake with Perlin noise, intensity/duration, additive stacking"},
+        {"id": "code-009", "name": "HitPauseController.cs", "description": "Time.timeScale manipulation for freeze frames"},
+        {"id": "code-010", "name": "ParticleController.cs", "description": "Spawn particles for trail, destruction, sparks"},
+        {"id": "code-011", "name": "JuiceOrchestrator.cs", "description": "Coordinates all juice: subscribes to events, triggers effects"},
+        {"id": "code-012", "name": "AudioManager.cs", "description": "Play sounds with pitch/volume variation, combo escalation"},
+        {"id": "code-013", "name": "GameHUD.cs", "description": "UI controller for score, combo, lives display"},
+        {"id": "code-014", "name": "ScorePopup.cs", "description": "Floating +points text that rises and fades"},
+        {"id": "code-015", "name": "Iteration2LifetimeScope.cs", "description": "VContainer DI setup for all services"}
+      ],
+      "dependencies": [],
+      "estimated_files": 15,
+      "priority": "high"
+    },
+
+    "audio": {
+      "agent": "asset-polecat",
+      "description": "Generate all sound effects via ElevenLabs",
+      "tasks": [
+        {"id": "audio-001", "name": "paddle_hit.wav", "description": "Satisfying thwack sound when ball hits paddle"},
+        {"id": "audio-002", "name": "brick_hit.wav", "description": "Crack/chip sound when brick takes damage"},
+        {"id": "audio-003", "name": "brick_destroy.wav", "description": "Glass/crystal shatter when brick destroyed"},
+        {"id": "audio-004", "name": "wall_bounce.wav", "description": "Soft ping when ball hits wall"},
+        {"id": "audio-005", "name": "combo_up.wav", "description": "Rising positive tone for combo increment"},
+        {"id": "audio-006", "name": "ball_lost.wav", "description": "Negative buzz/thud when ball falls"},
+        {"id": "audio-007", "name": "level_clear.wav", "description": "Victory fanfare jingle"},
+        {"id": "audio-008", "name": "launch.wav", "description": "Whoosh sound when ball launches"}
+      ],
+      "dependencies": [],
+      "estimated_assets": 8,
+      "priority": "high"
+    },
+
+    "scene": {
+      "agent": "scene-polecat",
+      "description": "Scene setup, prefabs, materials, particles, UI canvas",
+      "tasks": [
+        {"id": "scene-001", "name": "Create Iteration2Scene", "description": "New scene with 2D camera (orthographic size 6), directional light"},
+        {"id": "scene-002", "name": "Create boundaries", "description": "Wall colliders (left, right, top) and death zone (bottom) with tags"},
+        {"id": "scene-003", "name": "Create Ball prefab", "description": "Circle sprite, Rigidbody2D, CircleCollider2D, Ball script, TrailRenderer"},
+        {"id": "scene-004", "name": "Create Paddle prefab", "description": "Rounded rect sprite, Rigidbody2D kinematic, BoxCollider2D, Paddle script"},
+        {"id": "scene-005", "name": "Create Brick prefabs", "description": "4 brick types with colors (blue/green/orange/gray), BoxCollider2D, Brick script"},
+        {"id": "scene-006", "name": "Create particle prefabs", "description": "BallTrail, BrickDestruction, PaddleSparks, WallSparks particle systems"},
+        {"id": "scene-007", "name": "Setup UI Canvas", "description": "Canvas with Score, Combo, Lives, game state text elements"},
+        {"id": "scene-008", "name": "Create materials", "description": "Sprite materials with appropriate shaders for glow effects"},
+        {"id": "scene-009", "name": "Setup post-processing", "description": "URP Volume with Bloom, Chromatic Aberration, Vignette"},
+        {"id": "scene-010", "name": "Wire up GameManager", "description": "Add GameManager, JuiceOrchestrator, AudioManager to scene, assign references"}
+      ],
+      "dependencies": ["code"],
+      "estimated_objects": 25,
+      "priority": "high"
+    }
+  },
+
+  "parallel_groups": [
+    {
+      "phase": 1,
+      "name": "Independent Creation",
+      "workstreams": ["code", "audio"],
+      "description": "Code and audio can be created simultaneously - no dependencies"
+    },
+    {
+      "phase": 2,
+      "name": "Scene Assembly",
+      "workstreams": ["scene"],
+      "description": "Scene setup requires compiled scripts to attach to GameObjects"
+    }
+  ],
+
+  "execution_order": [
+    {
+      "phase": 1,
+      "description": "Spawn script-polecat AND asset-polecat in PARALLEL",
+      "agents": ["script-polecat", "asset-polecat"],
+      "wait_for": "both complete"
+    },
+    {
+      "phase": 2,
+      "description": "Spawn scene-polecat AFTER code compiles",
+      "agents": ["scene-polecat"],
+      "wait_for": "complete"
+    },
+    {
+      "phase": 3,
+      "description": "Spawn eyes-polecat to verify integration",
+      "agents": ["eyes-polecat"],
+      "verification": true
+    },
+    {
+      "phase": 4,
+      "description": "Play mode testing and evaluation",
+      "agents": ["evaluator"],
+      "evaluation": true
+    }
+  ],
+
+  "success_criteria": [
+    "Ball bounces off walls, paddle, and bricks",
+    "Paddle moves with mouse/keyboard input",
+    "Bricks take damage and are destroyed",
+    "Score increments with combo multiplier",
+    "Lives decrement on ball loss",
+    "Screen shake visible on impacts",
+    "Particles spawn on destruction",
+    "Audio plays on collisions",
+    "VLM rates juice >= 7/10"
+  ],
+
+  "estimated_total": {
+    "scripts": 15,
+    "audio_files": 8,
+    "prefabs": 8,
+    "scene_objects": 25
+  }
+}
