@@ -85,3 +85,7 @@ Assets/Screenshots/
 *.unitypackage
 *.app
 *.exe
+
+# Iteration 2 game files
+Assets/Iteration2/
+Assets/Iteration2.meta
